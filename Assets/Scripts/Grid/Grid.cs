@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,28 +9,35 @@ public class Grid : MonoBehaviour
     [SerializeField] private Transform objectContainer;
     [SerializeField] private List<Sprite> typeSprites;
     private GridObjectTypes objectType;
-    public GridPosition gridPosition;
-    public GridPosition GridIndex => gridPosition;
+    public GridIndex gridIndex;
+    public GridIndex CurrentGridIndex => gridIndex;
     public GridObjectTypes ObjectType => objectType;
     #endregion
     #region Components
     private SpriteRenderer objectSprite;
     #endregion
 
-    public void InitializeGrid(int i, int j, GridObjectTypes typeToCreate)
+    public void InitializeGrid(int raw, int column, GridObjectTypes typeToCreate)
     {
-        gridPosition.i = i;
-        gridPosition.j = j;
+        gridIndex.raw = raw;
+        gridIndex.column = column;
         objectSprite = objectContainer.GetComponent<SpriteRenderer>();
         objectSprite.sprite = typeSprites[(int)typeToCreate];
+        name = typeToCreate.ToString();
         objectType = typeToCreate;
+    }
+
+    public void SwipeTheGrid(GridIndex newGridIndex,Vector3 targetPosition)
+    {
+        gridIndex = newGridIndex;
+        transform.DOMove(targetPosition, 0.5f).SetTarget(this).SetEase(Ease.OutCubic);
     }
 }
 
 [System.Serializable]
-public struct GridPosition
+public struct GridIndex
 {
-    public int i; public int j;
+    public int raw; public int column;
 }
 
 public enum GridObjectTypes

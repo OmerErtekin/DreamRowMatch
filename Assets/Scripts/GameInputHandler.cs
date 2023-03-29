@@ -16,9 +16,11 @@ public class GameInputHandler : MonoBehaviour
     #region Components
     private Camera mainCamera;
     public Grid currentSelected;
+    private GridController gridController;
     #endregion
     private void Start()
     {
+        gridController = GridController.Instance;
         mainCamera = GetComponent<Camera>();
         if(mainCamera == null )
         {
@@ -63,7 +65,10 @@ public class GameInputHandler : MonoBehaviour
             swipeDirection = swipeVector.y > 0 ? Direction.Up : Direction.Down;
         }
 
-        Debug.Log(swipeDirection + " " + GridController.Instance.CanSwipeTheGrid(currentSelected.GridIndex, swipeDirection));
+        if(gridController.CanSwipeTheGrid(currentSelected, swipeDirection))
+        {
+            gridController.SwipeTheGrid(currentSelected, swipeDirection);
+        }
     }
 
 
