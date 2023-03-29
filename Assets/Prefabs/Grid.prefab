@@ -222,7 +222,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 50dd2e8acaa7426438d693e39eb73026, type: 3}
   - {fileID: 21300000, guid: 23c39604c54f9f944ac7791b186f3dce, type: 3}
   - {fileID: 21300000, guid: a292bddf8693e00428dace4a7f770aa6, type: 3}
-  objectType: 0
+  - {fileID: 21300000, guid: 1554c51b5f8695e448fe80eded370d3b, type: 3}
+  gridPosition:
+    i: 0
+    j: 0
 --- !u!65 &8347738904807494674
 BoxCollider:
   m_ObjectHideFlags: 0

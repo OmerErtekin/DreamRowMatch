@@ -7,20 +7,30 @@ public class Grid : MonoBehaviour
     #region Variables
     [SerializeField] private Transform objectContainer;
     [SerializeField] private List<Sprite> typeSprites;
-    public GridObjectTypes objectType;
+    private GridObjectTypes objectType;
+    public GridPosition gridPosition;
+    public GridPosition GridIndex => gridPosition;
+    public GridObjectTypes ObjectType => objectType;
     #endregion
     #region Components
     private SpriteRenderer objectSprite;
     #endregion
 
-    public void InitializeGrid(GridObjectTypes typeToCreate)
+    public void InitializeGrid(int i, int j, GridObjectTypes typeToCreate)
     {
+        gridPosition.i = i;
+        gridPosition.j = j;
         objectSprite = objectContainer.GetComponent<SpriteRenderer>();
         objectSprite.sprite = typeSprites[(int)typeToCreate];
         objectType = typeToCreate;
     }
 }
 
+[System.Serializable]
+public struct GridPosition
+{
+    public int i; public int j;
+}
 
 public enum GridObjectTypes
 {

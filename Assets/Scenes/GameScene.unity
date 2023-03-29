@@ -376,7 +376,7 @@ MonoBehaviour:
   targetLayerMasks:
     serializedVersion: 2
     m_Bits: 64
-  swipeThreshold: 20
+  swipeThreshold: 30
   swipeDirection: 4
   currentSelected: {fileID: 0}
 --- !u!1 &1456523355

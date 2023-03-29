@@ -49,7 +49,10 @@ public class GameInputHandler : MonoBehaviour
     void SetSwipeDirection(Vector2 swipeVector)
     {
         if (Mathf.Abs(swipeVector.x) < swipeThreshold && Mathf.Abs(swipeVector.y) < swipeThreshold)
+        {
             swipeDirection = Direction.None;
+            return;
+        }
 
         if (Mathf.Abs(swipeVector.x) > Mathf.Abs(swipeVector.y))
         {
@@ -59,6 +62,8 @@ public class GameInputHandler : MonoBehaviour
         {
             swipeDirection = swipeVector.y > 0 ? Direction.Up : Direction.Down;
         }
+
+        Debug.Log(swipeDirection + " " + GridController.Instance.CanSwipeTheGrid(currentSelected.GridIndex, swipeDirection));
     }
 
 
@@ -70,6 +75,9 @@ public class GameInputHandler : MonoBehaviour
             {
                 startSwipePosition = Input.mousePosition;
                 currentSelected = raycastHit.collider.gameObject.GetComponent<Grid>();
+
+                if (currentSelected.ObjectType == GridObjectTypes.Matched)
+                    currentSelected = null;
             }
         }
         if (Input.GetMouseButtonUp(0))
