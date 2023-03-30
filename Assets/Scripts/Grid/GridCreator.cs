@@ -5,7 +5,8 @@ using UnityEngine;
 public class GridCreator : MonoBehaviour
 {
     #region Variables
-    [SerializeField] private GameObject gridPrefab;
+    [SerializeField] private GameObject gridPrefab,backgroundPrefab;
+    [SerializeField] private Transform backgroudParent;
     [SerializeField] private float spacingBetweenGrids = 1f;
     [SerializeField] private List<GridObjectTypes> gridFormation1D;
     [SerializeField] private int gridRowCount = 5, gridColumnCount = 5;
@@ -38,7 +39,10 @@ public class GridCreator : MonoBehaviour
             {
                 int index = j + i * gridColumnCount;
                 Vector3 targetPosition = startPoint + new Vector3(j * spacingBetweenGrids, i * spacingBetweenGrids, 0);
+
                 var gridScript = Instantiate(gridPrefab, targetPosition, transform.rotation, transform).GetComponent<Grid>();
+                Instantiate(backgroundPrefab, targetPosition, transform.rotation, backgroudParent);
+
                 gridMatrix[i, j] = gridScript;
                 positionMatrix[i, j] = targetPosition;
                 gridScript.InitializeGrid(i, j, gridFormation1D[index]);
