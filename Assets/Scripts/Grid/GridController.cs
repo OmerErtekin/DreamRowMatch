@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,110 +6,182 @@ using UnityEngine;
 public class GridController : MonoBehaviour
 {
     #region Variables
-    private bool isSwiping = false;
-    #endregion
-    #region Components
-    public static GridController Instance;
-    private GridCreator gridCreator;
+    [SerializeField] private GameObject gridPrefab, backgroundPrefab;
+    [SerializeField] private Transform backgroudParent;
+    [SerializeField] private float spacingBetweenGrids = 1f;
+    [SerializeField] private List<GridObjectTypes> gridFormation1D;
+    [SerializeField] private int gridRowCount = 5, gridColumnCount = 5;
+    private BackgroundTile[,] bgTileMatrix;
+    private Grid[,] gridMatrix;
+    private Vector3[,] positionMatrix;
+    private List<RowWithMaxElement> possibleRowsWithMaxElement;
+    public int availableMatchCount;
+
     #endregion
     #region Properties
-    private Grid[,] GridMatrix => gridCreator.GridMatrix;
-    private Vector3[,] PositionMatrix => gridCreator.PositionMatrix;
-    private int GridRowCount => gridCreator.RowCount;
-    private int GridColumnCount => gridCreator.ColumnCount;
-    public bool IsSwiping => isSwiping;
+    public Grid[,] GridMatrix => gridMatrix;
+    public Vector3[,] PositionMatrix => positionMatrix;
+    public int RowCount => gridRowCount;
+    public int ColumnCount => gridColumnCount;
+    public int AvailableMatchCount => availableMatchCount;
     #endregion
-    private void Awake()
+
+    public void CreateGrid()
     {
-        Instance = this;
-        gridCreator = GetComponent<GridCreator>();
+        if (gridFormation1D.Count != gridRowCount * gridColumnCount)
+        {
+            Debug.LogWarning("Wrong Formation!");
+            return;
+        }
+
+        gridMatrix = new Grid[gridRowCount, gridColumnCount];
+        positionMatrix = new Vector3[gridRowCount, gridColumnCount];
+        bgTileMatrix = new BackgroundTile[gridRowCount, gridColumnCount];
+
+        Vector3 startPoint = transform.position - new Vector3((gridColumnCount - 1) * spacingBetweenGrids / 2, (gridRowCount - 1) * spacingBetweenGrids / 2, 0);
+        for (int i = 0; i < gridRowCount; i++)
+        {
+            for (int j = 0; j < gridColumnCount; j++)
+            {
+                int index = j + i * gridColumnCount;
+                Vector3 targetPosition = startPoint + new Vector3(j * spacingBetweenGrids, i * spacingBetweenGrids, 0);
+
+                var gridScript = Instantiate(gridPrefab, targetPosition, transform.rotation, transform).GetComponent<Grid>();
+                bgTileMatrix[i, j] = Instantiate(backgroundPrefab, targetPosition, transform.rotation, backgroudParent).GetComponent<BackgroundTile>();
+
+                gridMatrix[i, j] = gridScript;
+                positionMatrix[i, j] = targetPosition;
+                gridScript.InitializeGrid(i, j, gridFormation1D[index]);
+            }
+        }
+
+        CalculateAvailableMatchs();
+        GenerateBorders();
     }
 
-    private void Start()
+    private void GenerateBorders()
     {
-        gridCreator.CreateGrid();
+        for (int i = 0; i < RowCount; i++)
+        {
+            bgTileMatrix[i, 0].SetBorder(Direction.Left);
+            bgTileMatrix[i, ColumnCount - 1].SetBorder(Direction.Right);
+        }
+        for (int i = 0; i < ColumnCount; i++)
+        {
+            bgTileMatrix[0, i].SetBorder(Direction.Down);
+            bgTileMatrix[RowCount - 1, i].SetBorder(Direction.Up);
+        }
+    }
+
+    public void CalculateAvailableMatchs()
+    {
+        if (gridColumnCount <= 1) return;
+        availableMatchCount = 0;
+
+        SetPossibleRowAndElements();
+        if (possibleRowsWithMaxElement.Count == 0)
+            return;
+
+
+        for (int i = 0; i < possibleRowsWithMaxElement.Count; i++)
+        {
+            if (CanMatchWithDirection(i, Direction.Up) || CanMatchWithDirection(i, Direction.Down))
+            {
+                availableMatchCount++;
+            }
+        }
+
+    }
+
+    private bool CanMatchWithDirection(int possibleRowIndex, Direction direction)
+    {
+        var grid = GetDifferentElementOnRow(possibleRowsWithMaxElement[possibleRowIndex]);
+
+        return CanSwipeTheGrid(grid, direction) &&
+            GetGridToSwipe(grid.CurrentGridIndex, direction).ObjectType == possibleRowsWithMaxElement[possibleRowIndex].MaxElementType;
+    }
+
+    private void SetPossibleRowAndElements()
+    {
+        possibleRowsWithMaxElement = new List<RowWithMaxElement>();
+
+        for (int i = 0; i < gridRowCount; i++)
+        {
+            int[] rowElements = new int[5];
+
+            for (int j = 0; j < gridColumnCount; j++)
+            {
+                if (GridMatrix[i, j].ObjectType != GridObjectTypes.Matched)
+                    rowElements[(int)GridMatrix[i, j].ObjectType]++;
+            }
+
+            for (int k = 0; k < rowElements.Length; k++)
+            {
+                if (rowElements[k] == gridColumnCount - 1)
+                {
+                    RowWithMaxElement possibleElement = new()
+                    {
+                        RowNumber = i,
+                        MaxElementType = (GridObjectTypes)Enum.ToObject(typeof(GridObjectTypes), k)
+                    };
+                    possibleRowsWithMaxElement.Add(possibleElement);
+                    break;
+                }
+            }
+        }
+    }
+
+    private Grid GetDifferentElementOnRow(RowWithMaxElement rowWithElement)
+    {
+        for (int i = 0; i < gridColumnCount; i++)
+        {
+            if (gridMatrix[rowWithElement.RowNumber, i].ObjectType != rowWithElement.MaxElementType)
+                return gridMatrix[rowWithElement.RowNumber, i];
+        }
+        return null;
+    }
+
+    public Grid GetGridToSwipe(GridIndex gridPosition, Direction swipeDirection)
+    {
+        return swipeDirection switch
+        {
+            Direction.Up => GridMatrix[gridPosition.row + 1, gridPosition.column],
+
+            Direction.Down => GridMatrix[gridPosition.row - 1, gridPosition.column],
+
+            Direction.Right => GridMatrix[gridPosition.row, gridPosition.column + 1],
+
+            Direction.Left => GridMatrix[gridPosition.row, gridPosition.column - 1],
+
+            _ => null,
+        };
     }
 
     public bool CanSwipeTheGrid(Grid grid, Direction swipeDirection)
     {
-        if (isSwiping) return false;
 
         var gridIndex = grid.CurrentGridIndex;
 
         return swipeDirection switch
         {
-            Direction.Up => gridIndex.raw < GridRowCount - 1 && GetGridToSwipe(gridIndex, swipeDirection).ObjectType != GridObjectTypes.Matched,
+            Direction.Up => gridIndex.row < gridRowCount - 1 && GetGridToSwipe(gridIndex, swipeDirection).ObjectType != GridObjectTypes.Matched,
 
-            Direction.Down => gridIndex.raw > 0 && GetGridToSwipe(gridIndex, swipeDirection).ObjectType != GridObjectTypes.Matched,
+            Direction.Down => gridIndex.row > 0 && GetGridToSwipe(gridIndex, swipeDirection).ObjectType != GridObjectTypes.Matched,
 
-            Direction.Right => gridIndex.column < GridColumnCount - 1 && GetGridToSwipe(gridIndex, swipeDirection).ObjectType != GridObjectTypes.Matched,
+            Direction.Right => gridIndex.column < gridColumnCount - 1 && GetGridToSwipe(gridIndex, swipeDirection).ObjectType != GridObjectTypes.Matched,
 
             Direction.Left => gridIndex.column > 0 && GetGridToSwipe(gridIndex, swipeDirection).ObjectType != GridObjectTypes.Matched,
 
             _ => false,
         };
     }
-
-    private Grid GetGridToSwipe(GridIndex gridPosition, Direction swipeDirection)
+    public bool CheckIsRowMatch(int rowIndex)
     {
-        return swipeDirection switch
-        {
-            Direction.Up => GridMatrix[gridPosition.raw + 1, gridPosition.column],
-
-            Direction.Down => GridMatrix[gridPosition.raw - 1, gridPosition.column],
-
-            Direction.Right => GridMatrix[gridPosition.raw, gridPosition.column + 1],
-
-            Direction.Left => GridMatrix[gridPosition.raw, gridPosition.column - 1],
-
-            _ => null,
-        };
-    }
-
-    public void SwipeTheGrid(Grid grid, Direction swipeDirection)
-    {
-        isSwiping = true;
-        StartCoroutine(SwipeRoutine(grid, swipeDirection));
-    }
-
-    private IEnumerator SwipeRoutine(Grid grid, Direction swipeDirection)
-    {
-        Grid grid2 = GetGridToSwipe(grid.CurrentGridIndex, swipeDirection);
-
-        PerformSwipe(grid, grid2, 0.25f);
-        yield return new WaitForSeconds(0.25f);
-
-        if (CheckIsRowMatch(grid.CurrentGridIndex.raw) | CheckIsRowMatch(grid2.CurrentGridIndex.raw))
-        {
-            isSwiping = false;
-            yield break;
-        }
-
-        PerformSwipe(grid, grid2, 0.25f);
-        yield return new WaitForSeconds(0.25f);
-
-        isSwiping = false;
-    }
-
-    private void PerformSwipe(Grid grid1, Grid grid2, float swipeDuration)
-    {
-        var index1 = grid1.CurrentGridIndex;
-        var index2 = grid2.CurrentGridIndex;
-
-        grid1.SwipeTheGrid(index2, PositionMatrix[index2.raw, index2.column], swipeDuration);
-        grid2.SwipeTheGrid(index1, PositionMatrix[index1.raw, index1.column], swipeDuration);
-
-        GridMatrix[index1.raw, index1.column] = grid2;
-        GridMatrix[index2.raw, index2.column] = grid1;
-    }
-
-    private bool CheckIsRowMatch(int rowIndex)
-    {
-        if(GridColumnCount <= 1) return false;
+        if (gridColumnCount <= 1) return false;
 
         GridObjectTypes searchedType = GridMatrix[rowIndex, 0].ObjectType;
         bool isThereRowMatch = true;
-        for (int i = 0; i < GridColumnCount; i++)
+        for (int i = 1; i < gridColumnCount; i++)
         {
             if (GridMatrix[rowIndex, i].ObjectType != searchedType)
             {
@@ -119,7 +192,7 @@ public class GridController : MonoBehaviour
 
         if (isThereRowMatch)
         {
-            for (int i = 0; i < GridColumnCount; i++)
+            for (int i = 0; i < gridColumnCount; i++)
             {
                 GridMatrix[rowIndex, i].SetGridMatched();
             }
@@ -127,4 +200,10 @@ public class GridController : MonoBehaviour
 
         return isThereRowMatch;
     }
+}
+[Serializable]
+public struct RowWithMaxElement
+{
+    public int RowNumber;
+    public GridObjectTypes MaxElementType;
 }

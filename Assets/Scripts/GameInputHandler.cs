@@ -14,11 +14,11 @@ public class GameInputHandler : MonoBehaviour
     #region Components
     private Camera mainCamera;
     public Grid currentSelected;
-    private GridController gridController;
+    private GridSwiper gridController;
     #endregion
     private void Start()
     {
-        gridController = GridController.Instance;
+        gridController = GridSwiper.Instance;
         mainCamera = GetComponent<Camera>();
         if(mainCamera == null )
         {

@@ -17,9 +17,9 @@ public class Grid : MonoBehaviour
     public GridIndex CurrentGridIndex => gridIndex;
     public GridObjectTypes ObjectType => objectType;
     #endregion
-    public void InitializeGrid(int raw, int column, GridObjectTypes typeToCreate)
+    public void InitializeGrid(int row, int column, GridObjectTypes typeToCreate)
     {
-        gridIndex.raw = raw;
+        gridIndex.row = row;
         gridIndex.column = column;
         objectType = typeToCreate;
         objectSprite = objectContainer.GetComponent<SpriteRenderer>();
@@ -48,7 +48,7 @@ public class Grid : MonoBehaviour
 [System.Serializable]
 public struct GridIndex
 {
-    public int raw; public int column;
+    public int row; public int column;
 }
 
 public enum GridObjectTypes
