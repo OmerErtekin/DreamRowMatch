@@ -8,13 +8,16 @@ public class GridController : MonoBehaviour
     [SerializeField] private GameObject gridPrefab, backgroundPrefab;
     [SerializeField] private Transform backgroudParent;
     [SerializeField] private float spacingBetweenGrids = 1f;
-    [SerializeField] private List<GridObjectTypes> gridFormation1D;
-    [SerializeField] private int gridRowCount = 5, gridColumnCount = 5;
+
+    private List<GridObjectTypes> gridFormation;
+    private int gridRowCount, gridColumnCount;
+    private int maxMoveCount, currentMoveCount;
     private BackgroundTile[,] bgTileMatrix;
     private Grid[,] gridMatrix;
     private Vector3[,] positionMatrix;
     private List<RowWithMaxElement> potentialRowAndElements = new();
     private int availableMatchCount;
+    private int levelNumber;
 
     #endregion
     #region Properties
@@ -25,9 +28,20 @@ public class GridController : MonoBehaviour
     public int AvailableMatchCount => availableMatchCount;
     #endregion
 
-    public void CreateGrid()
+    public void InitializeLevel(LevelData levelData)
     {
-        if (gridFormation1D.Count != gridRowCount * gridColumnCount)
+        levelNumber = levelData.levelNumber;
+        gridColumnCount = levelData.gridWidth;
+        gridRowCount = levelData.gridHeight;
+        maxMoveCount = levelData.moveCount;
+        gridFormation = levelData.gridFormation;
+
+        CreateGrid();
+    }
+
+    private void CreateGrid()
+    {
+        if (gridFormation.Count != gridRowCount * gridColumnCount)
         {
             Debug.LogWarning("Wrong Formation!");
             return;
@@ -50,7 +64,7 @@ public class GridController : MonoBehaviour
 
                 gridMatrix[i, j] = gridScript;
                 positionMatrix[i, j] = targetPosition;
-                gridScript.InitializeGrid(i, j, gridFormation1D[index]);
+                gridScript.InitializeGrid(i, j, gridFormation[index]);
             }
         }
 

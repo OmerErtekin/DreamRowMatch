@@ -205,9 +205,6 @@ MonoBehaviour:
     type: 3}
   backgroudParent: {fileID: 39617540}
   spacingBetweenGrids: 1
-  gridFormation1D: 000000000300000000000000000000000000000003000000000000000000000000000000000000000200000000000000
-  gridRowCount: 4
-  gridColumnCount: 3
 --- !u!1 &589606051
 GameObject:
   m_ObjectHideFlags: 0
@@ -573,3 +570,107 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
+--- !u!1 &1622857311
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1622857313}
+  - component: {fileID: 1622857312}
+  m_Layer: 0
+  m_Name: Reader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1622857312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1622857311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c86e6321e21571b40918787f50d2bd6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  directoryPath: Assets/DownloadedLevels/
+  levels: []
+  gridController: {fileID: 335835103}
+  index: 1
+--- !u!4 &1622857313
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1622857311}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.5, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2098195249
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2098195251}
+  - component: {fileID: 2098195250}
+  m_Layer: 0
+  m_Name: Downloader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &2098195250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2098195249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 398d53cab06410843ae7c1bd19f79d9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  urls:
+  - https://row-match.s3.amazonaws.com/levels/RM_A1
+  - https://row-match.s3.amazonaws.com/levels/RM_A2
+  - https://row-match.s3.amazonaws.com/levels/RM_A3
+  - https://row-match.s3.amazonaws.com/levels/RM_A4
+  - https://row-match.s3.amazonaws.com/levels/RM_A5
+  - https://row-match.s3.amazonaws.com/levels/RM_A6
+  - https://row-match.s3.amazonaws.com/levels/RM_A7
+  - https://row-match.s3.amazonaws.com/levels/RM_A8
+  - https://row-match.s3.amazonaws.com/levels/RM_A9
+  - https://row-match.s3.amazonaws.com/levels/RM_A10
+  saveDirectory: Assets/DownloadedLevels
+--- !u!4 &2098195251
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2098195249}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.5, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

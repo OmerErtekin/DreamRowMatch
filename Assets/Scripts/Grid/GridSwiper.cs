@@ -14,11 +14,6 @@ public class GridSwiper : MonoBehaviour
     public bool IsSwiping => isSwiping;
     #endregion
 
-    private void Start()
-    {
-        gridController.CreateGrid();
-    }
-
     public bool CanSwipeTheGrid(Grid grid, Direction swipeDirection)
     {
         if (isSwiping) return false;
