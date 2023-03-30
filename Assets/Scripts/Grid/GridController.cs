@@ -14,8 +14,8 @@ public class GridController : MonoBehaviour
     private BackgroundTile[,] bgTileMatrix;
     private Grid[,] gridMatrix;
     private Vector3[,] positionMatrix;
-    private List<RowWithMaxElement> possibleRowsWithMaxElement;
-    public int availableMatchCount;
+    private List<RowWithMaxElement> possibleRowsWithMaxElement = new();
+    private int availableMatchCount;
 
     #endregion
     #region Properties
@@ -103,7 +103,7 @@ public class GridController : MonoBehaviour
 
     private void SetPossibleRowAndElements()
     {
-        possibleRowsWithMaxElement = new List<RowWithMaxElement>();
+        possibleRowsWithMaxElement.Clear();
 
         for (int i = 0; i < gridRowCount; i++)
         {
