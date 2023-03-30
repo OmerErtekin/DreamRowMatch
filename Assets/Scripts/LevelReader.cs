@@ -33,7 +33,7 @@ public class LevelReader : MonoBehaviour
             string[] gridColors = lines[4].Split(':')[1].Trim().Split(',');
 
             List<GridObjectTypes> grid = new List<GridObjectTypes>();
-            for (int i = gridColors.Length - 1; i >= 0; i--)
+            for (int i = 0; i < gridColors.Length; i++)
             {
                 string color = gridColors[i].Trim();
                 switch (color)
