@@ -7,17 +7,16 @@ public class GridController : MonoBehaviour
     #region Variables
     private bool isSwiping = false;
     #endregion
-
     #region Components
     public static GridController Instance;
     private GridCreator gridCreator;
     #endregion
-
     #region Properties
     private Grid[,] GridMatrix => gridCreator.GridMatrix;
     private Vector3[,] PositionMatrix => gridCreator.PositionMatrix;
     private int GridRowCount => gridCreator.RowCount;
     private int GridColumnCount => gridCreator.ColumnCount;
+    public bool IsSwiping => isSwiping;
     #endregion
     private void Awake()
     {
@@ -105,6 +104,8 @@ public class GridController : MonoBehaviour
 
     private bool CheckIsRowMatch(int rowIndex)
     {
+        if(GridColumnCount <= 1) return false;
+
         GridObjectTypes searchedType = GridMatrix[rowIndex, 0].ObjectType;
         bool isThereRowMatch = true;
         for (int i = 0; i < GridColumnCount; i++)

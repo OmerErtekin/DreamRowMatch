@@ -10,6 +10,7 @@ public class GridCreator : MonoBehaviour
     [SerializeField] private float spacingBetweenGrids = 1f;
     [SerializeField] private List<GridObjectTypes> gridFormation1D;
     [SerializeField] private int gridRowCount = 5, gridColumnCount = 5;
+    private BackgroundTile[,] bgTileMatrix;
     private Grid[,] gridMatrix;
     private Vector3[,] positionMatrix;
 
@@ -31,6 +32,7 @@ public class GridCreator : MonoBehaviour
 
         gridMatrix = new Grid[gridRowCount, gridColumnCount];
         positionMatrix = new Vector3[gridRowCount, gridColumnCount];
+        bgTileMatrix = new BackgroundTile[gridRowCount, gridColumnCount];
 
         Vector3 startPoint = transform.position - new Vector3((gridColumnCount - 1) * spacingBetweenGrids / 2, (gridRowCount - 1) * spacingBetweenGrids / 2, 0);
         for (int i = 0; i < gridRowCount; i++)
@@ -41,15 +43,30 @@ public class GridCreator : MonoBehaviour
                 Vector3 targetPosition = startPoint + new Vector3(j * spacingBetweenGrids, i * spacingBetweenGrids, 0);
 
                 var gridScript = Instantiate(gridPrefab, targetPosition, transform.rotation, transform).GetComponent<Grid>();
-                Instantiate(backgroundPrefab, targetPosition, transform.rotation, backgroudParent);
+                bgTileMatrix[i,j] =  Instantiate(backgroundPrefab, targetPosition, transform.rotation, backgroudParent).GetComponent<BackgroundTile>();
 
                 gridMatrix[i, j] = gridScript;
                 positionMatrix[i, j] = targetPosition;
                 gridScript.InitializeGrid(i, j, gridFormation1D[index]);
             }
         }
+
+        GenerateBorders();
     }
 
+    private void GenerateBorders()
+    {
+        for(int i = 0;i<RowCount;i++)
+        {
+            bgTileMatrix[i, 0].SetBorder(Direction.Left);
+            bgTileMatrix[i,ColumnCount - 1].SetBorder(Direction.Right);
+        }
+        for(int i = 0;i<ColumnCount; i++)
+        {
+            bgTileMatrix[0, i].SetBorder(Direction.Down);
+            bgTileMatrix[RowCount - 1,i].SetBorder(Direction.Up);
+        }
+    }
     public void PrintGrid()
     {
         string allGrid = "";

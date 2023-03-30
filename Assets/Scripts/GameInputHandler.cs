@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class GameInputHandler : MonoBehaviour
@@ -10,7 +7,8 @@ public class GameInputHandler : MonoBehaviour
     [SerializeField] private int swipeThreshold = 2;
     private RaycastHit raycastHit;
     private Vector2 startSwipePosition;
-    public Direction swipeDirection = Direction.None;
+    private Direction swipeDirection = Direction.None;
+    private bool isMadeAMove = false;
     #endregion
 
     #region Components
@@ -30,6 +28,8 @@ public class GameInputHandler : MonoBehaviour
 
     private void Update()
     {
+        if (gridController.IsSwiping)
+            return;
         HandleGridSelect();
         HandleSwipeMovement();
     }
@@ -37,7 +37,7 @@ public class GameInputHandler : MonoBehaviour
 
     private void HandleSwipeMovement()
     {
-        if (!currentSelected)
+        if (!currentSelected || isMadeAMove)
         {
             this.swipeDirection = Direction.None;
             return;
@@ -67,7 +67,13 @@ public class GameInputHandler : MonoBehaviour
 
         if(gridController.CanSwipeTheGrid(currentSelected, swipeDirection))
         {
+            isMadeAMove = true;
             gridController.SwipeTheGrid(currentSelected, swipeDirection);
+        }
+        else
+        {
+            isMadeAMove = true;
+            currentSelected.ShakeTheGrid();
         }
     }
 
@@ -81,12 +87,18 @@ public class GameInputHandler : MonoBehaviour
                 startSwipePosition = Input.mousePosition;
                 currentSelected = raycastHit.collider.gameObject.GetComponent<Grid>();
 
+                isMadeAMove = false;
+
                 if (currentSelected.ObjectType == GridObjectTypes.Matched)
+                {
+                    isMadeAMove = true;
                     currentSelected = null;
+                }
             }
         }
         if (Input.GetMouseButtonUp(0))
         {
+            isMadeAMove = false;
             currentSelected = null;
         }
     }

@@ -1,5 +1,4 @@
 using DG.Tweening;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,13 +9,14 @@ public class Grid : MonoBehaviour
     [SerializeField] private List<Sprite> typeSprites;
     private GridObjectTypes objectType;
     private GridIndex gridIndex;
-    public GridIndex CurrentGridIndex => gridIndex;
-    public GridObjectTypes ObjectType => objectType;
     #endregion
     #region Components
     private SpriteRenderer objectSprite;
     #endregion
-
+    #region Properties
+    public GridIndex CurrentGridIndex => gridIndex;
+    public GridObjectTypes ObjectType => objectType;
+    #endregion
     public void InitializeGrid(int raw, int column, GridObjectTypes typeToCreate)
     {
         gridIndex.raw = raw;
@@ -26,10 +26,15 @@ public class Grid : MonoBehaviour
         objectSprite.sprite = typeSprites[(int)typeToCreate];
     }
 
-    public void SwipeTheGrid(GridIndex newGridIndex,Vector3 targetPosition,float swipeDuration)
+    public void SwipeTheGrid(GridIndex newGridIndex, Vector3 targetPosition, float swipeDuration)
     {
         gridIndex = newGridIndex;
         transform.DOMove(targetPosition, swipeDuration).SetTarget(this).SetEase(Ease.OutCubic);
+    }
+
+    public void ShakeTheGrid()
+    {
+        objectContainer.DOShakeRotation(0.5f, new Vector3(0, 0, 30)).SetTarget(this);
     }
 
     public void SetGridMatched()
