@@ -3,26 +3,33 @@ using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine.UI;
+using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 public class LevelDownloader : MonoBehaviour
 {
-    public List<string> urls;
-    public string saveDirectory;
+    [SerializeField] private UrlData urlData;
+    [SerializeField] private Image fillbarImage;
 
     IEnumerator Start()
     {
-        if(PlayerPrefs.GetInt("IsDownloadedLevels",0) == 1 || urls.Count == 0)
+        if(PlayerPrefs.GetInt("IsDownloadedLevels",0) == 1 || urlData.urls.Count == 0)
+        {
+            LoadLevelWithFillBar();
             yield break;
+        }
 
-        UnityWebRequest www = UnityWebRequest.Get(urls[0]);
+        UnityWebRequest www = UnityWebRequest.Get(urlData.urls[0]);
         yield return www.SendWebRequest();
 
         if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
         {
-            Debug.LogError("Error On Internet Connection. Will not be downloaded!");
+            Debug.Log("Error On Internet Connection. Will not be downloaded!");
+            LoadLevelWithFillBar();
             yield break;
         }
 
@@ -31,14 +38,16 @@ public class LevelDownloader : MonoBehaviour
 
     private IEnumerator DownloadAndSaveLevels()
     {
-        UnityWebRequest www = UnityWebRequest.Get(urls[0]);
+        fillbarImage.DOFillAmount(0.5f, 0.5f).SetTarget(this);
 
-        if (!Directory.Exists(saveDirectory))
+        UnityWebRequest www = UnityWebRequest.Get(urlData.urls[0]);
+
+        if (!Directory.Exists(urlData.filePath))
         {
-            Directory.CreateDirectory(saveDirectory);
+            Directory.CreateDirectory(urlData.filePath);
         }
 
-        foreach (string url in urls)
+        foreach (string url in urlData.urls)
         {
             Debug.Log("Downloading file: " + url);
 
@@ -52,7 +61,7 @@ public class LevelDownloader : MonoBehaviour
             }
 
             string fileName = Path.GetFileName(url);
-            string filePath = Path.Combine(saveDirectory, fileName);
+            string filePath = Path.Combine(urlData.filePath, fileName);
 
             File.WriteAllText(filePath, www.downloadHandler.text);
 
@@ -60,8 +69,15 @@ public class LevelDownloader : MonoBehaviour
         }
 
         PlayerPrefs.SetInt("IsDownloadedLevels", 1);
+        LoadLevelWithFillBar();
 #if UNITY_EDITOR
         AssetDatabase.Refresh();
 #endif
+    }
+
+    private void LoadLevelWithFillBar()
+    {
+        fillbarImage.DOKill();
+        fillbarImage.DOFillAmount(1, 1f).OnComplete(()=> SceneManager.LoadScene(1)).SetTarget(this);
     }
 }
