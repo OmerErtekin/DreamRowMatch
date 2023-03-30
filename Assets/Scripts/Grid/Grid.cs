@@ -9,7 +9,7 @@ public class Grid : MonoBehaviour
     [SerializeField] private Transform objectContainer;
     [SerializeField] private List<Sprite> typeSprites;
     private GridObjectTypes objectType;
-    public GridIndex gridIndex;
+    private GridIndex gridIndex;
     public GridIndex CurrentGridIndex => gridIndex;
     public GridObjectTypes ObjectType => objectType;
     #endregion
@@ -21,16 +21,22 @@ public class Grid : MonoBehaviour
     {
         gridIndex.raw = raw;
         gridIndex.column = column;
+        objectType = typeToCreate;
         objectSprite = objectContainer.GetComponent<SpriteRenderer>();
         objectSprite.sprite = typeSprites[(int)typeToCreate];
-        name = typeToCreate.ToString();
-        objectType = typeToCreate;
     }
 
-    public void SwipeTheGrid(GridIndex newGridIndex,Vector3 targetPosition)
+    public void SwipeTheGrid(GridIndex newGridIndex,Vector3 targetPosition,float swipeDuration)
     {
         gridIndex = newGridIndex;
-        transform.DOMove(targetPosition, 0.5f).SetTarget(this).SetEase(Ease.OutCubic);
+        transform.DOMove(targetPosition, swipeDuration).SetTarget(this).SetEase(Ease.OutCubic);
+    }
+
+    public void SetGridMatched()
+    {
+        transform.DOScale(1, 0.25f).SetTarget(true).SetEase(Ease.OutBack).From(0);
+        objectType = GridObjectTypes.Matched;
+        objectSprite.sprite = typeSprites[(int)objectType];
     }
 }
 
