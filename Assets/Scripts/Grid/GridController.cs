@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,7 +13,7 @@ public class GridController : MonoBehaviour
     private BackgroundTile[,] bgTileMatrix;
     private Grid[,] gridMatrix;
     private Vector3[,] positionMatrix;
-    private List<RowWithMaxElement> possibleRowsWithMaxElement = new();
+    private List<RowWithMaxElement> potentialRowAndElements = new();
     private int availableMatchCount;
 
     #endregion
@@ -56,10 +55,10 @@ public class GridController : MonoBehaviour
         }
 
         CalculateAvailableMatchs();
-        GenerateBorders();
+        GenerateBackgroundBorders();
     }
 
-    private void GenerateBorders()
+    private void GenerateBackgroundBorders()
     {
         for (int i = 0; i < RowCount; i++)
         {
@@ -78,14 +77,14 @@ public class GridController : MonoBehaviour
         if (gridColumnCount <= 1) return;
         availableMatchCount = 0;
 
-        SetPossibleRowAndElements();
-        if (possibleRowsWithMaxElement.Count == 0)
+        SetPotantielRowAndElements();
+        if (potentialRowAndElements.Count == 0)
             return;
 
 
-        for (int i = 0; i < possibleRowsWithMaxElement.Count; i++)
+        for (int i = 0; i < potentialRowAndElements.Count; i++)
         {
-            if (CanMatchWithDirection(i, Direction.Up) || CanMatchWithDirection(i, Direction.Down))
+            if (CanMatchWithOneMovement(i, Direction.Up) || CanMatchWithOneMovement(i, Direction.Down))
             {
                 availableMatchCount++;
             }
@@ -93,21 +92,23 @@ public class GridController : MonoBehaviour
 
     }
 
-    private bool CanMatchWithDirection(int possibleRowIndex, Direction direction)
+    private bool CanMatchWithOneMovement(int possibleRowIndex, Direction direction)
     {
-        var grid = GetDifferentElementOnRow(possibleRowsWithMaxElement[possibleRowIndex]);
+        //After finding which object is different, then we will check if we can replace this object with up or down and have a match in this case.
+        var grid = GetDifferentElementOnRow(potentialRowAndElements[possibleRowIndex]);
 
         return CanSwipeTheGrid(grid, direction) &&
-            GetGridToSwipe(grid.CurrentGridIndex, direction).ObjectType == possibleRowsWithMaxElement[possibleRowIndex].MaxElementType;
+            GetGridToSwipe(grid.CurrentGridIndex, direction).ObjectType == potentialRowAndElements[possibleRowIndex].MaxElementType;
     }
 
-    private void SetPossibleRowAndElements()
+    private void SetPotantielRowAndElements()
     {
-        possibleRowsWithMaxElement.Clear();
+        potentialRowAndElements.Clear();
 
         for (int i = 0; i < gridRowCount; i++)
         {
-            int[] rowElements = new int[5];
+            //First calculate the object counts on each row and store it on the array
+            int[] rowElements = new int[(int)GridObjectTypes.Matched];
 
             for (int j = 0; j < gridColumnCount; j++)
             {
@@ -117,6 +118,7 @@ public class GridController : MonoBehaviour
 
             for (int k = 0; k < rowElements.Length; k++)
             {
+                //If any row has an object gridColumn - 1 times, it would be a potential match so we will check it afterwards
                 if (rowElements[k] == gridColumnCount - 1)
                 {
                     RowWithMaxElement possibleElement = new()
@@ -124,7 +126,7 @@ public class GridController : MonoBehaviour
                         RowNumber = i,
                         MaxElementType = (GridObjectTypes)Enum.ToObject(typeof(GridObjectTypes), k)
                     };
-                    possibleRowsWithMaxElement.Add(possibleElement);
+                    potentialRowAndElements.Add(possibleElement);
                     break;
                 }
             }
@@ -133,6 +135,7 @@ public class GridController : MonoBehaviour
 
     private Grid GetDifferentElementOnRow(RowWithMaxElement rowWithElement)
     {
+        //If we have a potential row, we should have only one different element in this row.This functions find this element.
         for (int i = 0; i < gridColumnCount; i++)
         {
             if (gridMatrix[rowWithElement.RowNumber, i].ObjectType != rowWithElement.MaxElementType)
@@ -159,7 +162,7 @@ public class GridController : MonoBehaviour
 
     public bool CanSwipeTheGrid(Grid grid, Direction swipeDirection)
     {
-
+        //Rules for swipe
         var gridIndex = grid.CurrentGridIndex;
 
         return swipeDirection switch
@@ -175,6 +178,7 @@ public class GridController : MonoBehaviour
             _ => false,
         };
     }
+
     public bool CheckIsRowMatch(int rowIndex)
     {
         if (gridColumnCount <= 1) return false;
@@ -200,10 +204,4 @@ public class GridController : MonoBehaviour
 
         return isThereRowMatch;
     }
-}
-[Serializable]
-public struct RowWithMaxElement
-{
-    public int RowNumber;
-    public GridObjectTypes MaxElementType;
 }

@@ -1,27 +1,18 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GridSwiper : MonoBehaviour
 {
     #region Variables
+    [SerializeField] private float swipeDuration = 0.25f;
     private bool isSwiping = false;
-
     #endregion
     #region Components
-    public static GridSwiper Instance;
-    private GridController gridController;
+    [SerializeField] private GridController gridController;
     #endregion
     #region Properties
-    private Grid[,] GridMatrix => gridController.GridMatrix;
-    private Vector3[,] PositionMatrix => gridController.PositionMatrix;
     public bool IsSwiping => isSwiping;
     #endregion
-    private void Awake()
-    {
-        Instance = this;
-        gridController = GetComponent<GridController>();
-    }
 
     private void Start()
     {
@@ -44,9 +35,9 @@ public class GridSwiper : MonoBehaviour
     private IEnumerator SwipeRoutine(Grid grid, Direction swipeDirection)
     {
         Grid grid2 = gridController.GetGridToSwipe(grid.CurrentGridIndex, swipeDirection);
+        PerformSwipe(grid, grid2);
 
-        PerformSwipe(grid, grid2, 0.25f);
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(swipeDuration);
 
         if (gridController.CheckIsRowMatch(grid.CurrentGridIndex.row) | gridController.CheckIsRowMatch(grid2.CurrentGridIndex.row))
         {
@@ -55,22 +46,26 @@ public class GridSwiper : MonoBehaviour
             yield break;
         }
             
-        PerformSwipe(grid, grid2, 0.25f);
-        yield return new WaitForSeconds(0.25f);
+        PerformSwipe(grid, grid2);
+
+        yield return new WaitForSeconds(swipeDuration);
 
         gridController.CalculateAvailableMatchs();
         isSwiping = false;
     }
 
-    private void PerformSwipe(Grid grid1, Grid grid2, float swipeDuration)
+    private void PerformSwipe(Grid grid1, Grid grid2)
     {
         var index1 = grid1.CurrentGridIndex;
         var index2 = grid2.CurrentGridIndex;
 
-        grid1.SwipeTheGrid(index2, PositionMatrix[index2.row, index2.column], swipeDuration);
-        grid2.SwipeTheGrid(index1, PositionMatrix[index1.row, index1.column], swipeDuration);
+        //We could also do this scrolling with the positions of the elements themselves. But maybe the positions would change
+        //during movement and we may have some bad positions. So instead, we will use an position matrix to go exact same position at each move
 
-        GridMatrix[index1.row, index1.column] = grid2;
-        GridMatrix[index2.row, index2.column] = grid1;
+        grid1.SwipeTheGrid(index2, gridController.PositionMatrix[index2.row, index2.column], swipeDuration);
+        grid2.SwipeTheGrid(index1, gridController.PositionMatrix[index1.row, index1.column], swipeDuration);
+
+        gridController.GridMatrix[index1.row, index1.column] = grid2;
+        gridController.GridMatrix[index2.row, index2.column] = grid1;
     }
 }

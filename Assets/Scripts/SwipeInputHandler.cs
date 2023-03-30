@@ -1,51 +1,46 @@
 using UnityEngine;
 
-public class GameInputHandler : MonoBehaviour
+public class SwipeInputHandler : MonoBehaviour
 {
     #region Variables
     [SerializeField] private LayerMask targetLayerMasks;
-    [SerializeField] private int swipeThreshold = 2;
+    [SerializeField] private float swipeThreshold = 2;
     private RaycastHit raycastHit;
     private Vector2 startSwipePosition;
     private Direction swipeDirection = Direction.None;
     private bool isMadeAMove = false;
     #endregion
-
     #region Components
     private Camera mainCamera;
     public Grid currentSelected;
-    private GridSwiper gridController;
+    private GridSwiper gridSwiper;
     #endregion
     private void Start()
     {
-        gridController = GridSwiper.Instance;
-        mainCamera = GetComponent<Camera>();
-        if(mainCamera == null )
-        {
-            Debug.LogWarning("Please add input handler to main camera!");
-        }
+        gridSwiper = GetComponent<GridSwiper>();
+        mainCamera = Camera.main;
     }
 
     private void Update()
     {
-        if (gridController.IsSwiping)
+        if (gridSwiper.IsSwiping)
             return;
+
         HandleGridSelect();
         HandleSwipeMovement();
     }
-
 
     private void HandleSwipeMovement()
     {
         if (!currentSelected || isMadeAMove)
         {
-            this.swipeDirection = Direction.None;
+            swipeDirection = Direction.None;
             return;
         }
 
         Vector2 currentSwipePosition = Input.mousePosition;
-        Vector2 swipeDirection = currentSwipePosition - startSwipePosition;
-        SetSwipeDirection(swipeDirection);
+        Vector2 swipeVector = currentSwipePosition - startSwipePosition;
+        SetSwipeDirection(swipeVector);
     }
 
     void SetSwipeDirection(Vector2 swipeVector)
@@ -65,18 +60,17 @@ public class GameInputHandler : MonoBehaviour
             swipeDirection = swipeVector.y > 0 ? Direction.Up : Direction.Down;
         }
 
-        if(gridController.CanSwipeTheGrid(currentSelected, swipeDirection))
+        isMadeAMove = true;
+
+        if (gridSwiper.CanSwipeTheGrid(currentSelected, swipeDirection))
         {
-            isMadeAMove = true;
-            gridController.SwipeTheGrid(currentSelected, swipeDirection);
+            gridSwiper.SwipeTheGrid(currentSelected, swipeDirection);
         }
         else
         {
-            isMadeAMove = true;
             currentSelected.ShakeTheGrid();
         }
     }
-
 
     private void HandleGridSelect()
     {
@@ -86,14 +80,7 @@ public class GameInputHandler : MonoBehaviour
             {
                 startSwipePosition = Input.mousePosition;
                 currentSelected = raycastHit.collider.gameObject.GetComponent<Grid>();
-
                 isMadeAMove = false;
-
-                if (currentSelected.ObjectType == GridObjectTypes.Matched)
-                {
-                    isMadeAMove = true;
-                    currentSelected = null;
-                }
             }
         }
         if (Input.GetMouseButtonUp(0))
@@ -104,4 +91,3 @@ public class GameInputHandler : MonoBehaviour
     }
 }
 
-public enum Direction { Right, Left, Up, Down, None }

@@ -12,6 +12,7 @@ public class Grid : MonoBehaviour
     #endregion
     #region Components
     private SpriteRenderer objectSprite;
+    private Collider gridCollider;
     #endregion
     #region Properties
     public GridIndex CurrentGridIndex => gridIndex;
@@ -22,6 +23,8 @@ public class Grid : MonoBehaviour
         gridIndex.row = row;
         gridIndex.column = column;
         objectType = typeToCreate;
+
+        gridCollider = GetComponent<Collider>();
         objectSprite = objectContainer.GetComponent<SpriteRenderer>();
         objectSprite.sprite = typeSprites[(int)typeToCreate];
     }
@@ -39,23 +42,11 @@ public class Grid : MonoBehaviour
 
     public void SetGridMatched()
     {
+        gridCollider.enabled = false;
         transform.DOScale(1, 0.25f).SetTarget(true).SetEase(Ease.OutBack).From(0);
         objectType = GridObjectTypes.Matched;
         objectSprite.sprite = typeSprites[(int)objectType];
     }
 }
 
-[System.Serializable]
-public struct GridIndex
-{
-    public int row; public int column;
-}
 
-public enum GridObjectTypes
-{
-    Red,
-    Green,
-    Blue,
-    Yellow,
-    Matched,
-}
