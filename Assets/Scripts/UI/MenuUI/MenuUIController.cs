@@ -24,10 +24,7 @@ public class MenuUIController : MonoBehaviour
             IngameLoadingScreen.Instance.HideLoadingScreen(true);
             StartCoroutine(CameFromMenuRoutine());
         }
-        else
-        {
-            IngameLoadingScreen.Instance.HideLoadingScreen(false);
-        }
+
         PlayerPrefs.SetInt("DidComeFromGame", 0);
     }
 

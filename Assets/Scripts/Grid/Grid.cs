@@ -43,6 +43,8 @@ public class Grid : MonoBehaviour
     public void SetGridMatched()
     {
         gridCollider.enabled = false;
+        transform.DOKill();
+        transform.DOShakeRotation(1f, new Vector3(0, 0, 90)).SetTarget(this);
         transform.DOScale(1, 0.25f).SetTarget(true).SetEase(Ease.OutBack).From(0);
         objectType = GridObjectTypes.Matched;
         objectSprite.sprite = typeSprites[(int)objectType];

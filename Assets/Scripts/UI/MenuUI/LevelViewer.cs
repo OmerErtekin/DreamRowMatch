@@ -10,7 +10,7 @@ public class LevelViewer : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Scrollbar scrollBar;
     [SerializeField] private ScrollRect scrollRect;
-    private LevelReader levelReader;
+    [SerializeField] private LevelReader levelReader;
     #endregion
     #region Variables
     [SerializeField] private Transform contentTransform;
@@ -18,12 +18,6 @@ public class LevelViewer : MonoBehaviour
     [SerializeField] private int visibleBarCount = 5;
     private List<LevelBar> levelBars = new();
     #endregion
-
-    private void Start()
-    {
-        levelReader = GetComponent<LevelReader>();
-        GenerateLevelBars();
-    }
 
     private void Update()
     {
@@ -34,12 +28,17 @@ public class LevelViewer : MonoBehaviour
     public void ShowLevelViewer(bool willUnlockNextLevel = false)
     {
         gameObject.SetActive(true);
+        if (levelBars.Count == 0)
+        {
+            GenerateLevelBars();
+        }
         canvasGroup.DOKill();
         canvasGroup.DOFade(1, 0.5f).SetTarget(this).From(0);
         if (willUnlockNextLevel)
         {
-            Invoke(nameof(TryUnlockNextLevel),1);
+            Invoke(nameof(TryUnlockNextLevel), 1);
         }
+        StartCoroutine(SetScrollBarPosForIndex(PlayerPrefs.GetInt("SelectedLevel", 1)));
     }
 
     public void HideLevelViewer()
@@ -65,12 +64,12 @@ public class LevelViewer : MonoBehaviour
             levelBars.Add(Instantiate(levelBarPrefab, contentTransform).GetComponent<LevelBar>());
             levelBars[i].InitializeLevelBar(levelReader.Levels[i]);
         }
-
-        SetScrollBarPosForIndex(PlayerPrefs.GetInt("SelectedLevel", 1));
+        StartCoroutine(SetScrollBarPosForIndex(PlayerPrefs.GetInt("SelectedLevel", 1)));
     }
 
-    private void SetScrollBarPosForIndex(int index, float tweenDuration = 0)
+    private IEnumerator SetScrollBarPosForIndex(int index, float tweenDuration = 0)
     {
+        yield return new WaitForFixedUpdate();
         if (index < 4)
             scrollBar.value = 1;
         if (index > levelReader.Levels.Count - visibleBarCount)
@@ -94,7 +93,7 @@ public class LevelViewer : MonoBehaviour
     {
         scrollRect.vertical = false;
         int nextIndex = PlayerPrefs.GetInt("MaxLevel", 1);
-        SetScrollBarPosForIndex(nextIndex + 1, 0.5f);
+        StartCoroutine(SetScrollBarPosForIndex(nextIndex + 1, 0.5f));
 
         yield return new WaitForSeconds(0.5f);
         levelBars[nextIndex].UnlockLevel();
