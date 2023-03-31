@@ -10,10 +10,16 @@ public class GridSwiper : MonoBehaviour
     #endregion
     #region Components
     [SerializeField] private GridController gridController;
+    private GameUIController gameUIController;
     #endregion
     #region Properties
     public bool IsSwiping => isSwiping;
     #endregion
+
+    private void Start()
+    {
+        gameUIController = GameUIController.Instance;
+    }
 
     public bool CanSwipeTheGrid(Grid grid, Direction swipeDirection)
     {
@@ -56,6 +62,10 @@ public class GridSwiper : MonoBehaviour
         gridController.GridMatrix[index2.row, index2.column] = grid1;
 
         moveCount++;
-        GameUIController.Instance.UpdateMoveText(gridController.MaxMoveCount - moveCount);
+        gameUIController.UpdateMoveText(gridController.MaxMoveCount - moveCount);
+        if(moveCount >= gridController.MaxMoveCount)
+        {
+            gameUIController.FinishTheGame(GameEndType.OutOfMove);
+        }
     }
 }

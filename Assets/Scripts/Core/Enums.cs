@@ -18,3 +18,9 @@ public enum Direction
     Down,
     None 
 }
+
+public enum GameEndType
+{
+    OutOfMove,
+    NoMoreMatch,
+}

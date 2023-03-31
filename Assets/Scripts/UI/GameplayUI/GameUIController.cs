@@ -8,12 +8,17 @@ public class GameUIController : MonoBehaviour
     #region Components
     public static GameUIController Instance;
     [SerializeField] private TMP_Text moveText, highScoreText,currentScoreText;
+    [SerializeField] private LevelEndScreen levelEndScreen;
     #endregion
 
     #region Variables
     private LevelData currentLevelData;
     private int highScore,currentScore;
     private bool didBeatHighScore = false;
+    private bool isGameFinished = false;
+    public bool IsGameFinished => isGameFinished;
+    public int CurrentScore => currentScore;
+    public int HighScore => highScore;
     #endregion
 
     private void Awake()
@@ -61,6 +66,14 @@ public class GameUIController : MonoBehaviour
         textRef.DOKill();
         textRef.transform.DOScale(1, 0.25f).From(0.75f).SetEase(Ease.OutBack);
         textRef.text = text;
+    }
+
+    public void FinishTheGame(GameEndType type)
+    {
+        if(isGameFinished) return;
+
+        isGameFinished = true;
+        levelEndScreen.ShowLevelEndScreen(type);
     }
 
     public void ReturnToMainMenu()

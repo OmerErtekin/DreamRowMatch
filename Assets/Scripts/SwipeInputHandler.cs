@@ -11,19 +11,21 @@ public class SwipeInputHandler : MonoBehaviour
     private bool isMadeAMove = false;
     #endregion
     #region Components
+    private GameUIController gameUIController;
     private Camera mainCamera;
     public Grid currentSelected;
     private GridSwiper gridSwiper;
     #endregion
     private void Start()
     {
+        gameUIController = GameUIController.Instance;
         gridSwiper = GetComponent<GridSwiper>();
         mainCamera = Camera.main;
     }
 
     private void Update()
     {
-        if (gridSwiper.IsSwiping)
+        if (gridSwiper.IsSwiping || gameUIController.IsGameFinished)
             return;
 
         HandleGridSelect();
