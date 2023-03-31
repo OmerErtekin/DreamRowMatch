@@ -5,19 +5,21 @@ using UnityEngine;
 
 public class LevelReader : MonoBehaviour
 {
-    public string directoryPath;
-    public List<LevelData> levels;
-    public GridController gridController;
-    public int index = 0;
-    void Start()
+    #region Variables
+    [SerializeField] private UrlData urlData;
+    private List<LevelData> levels = new();
+    #endregion
+    #region Properties
+    public List<LevelData> Levels => levels;
+    #endregion
+    void Awake()
     {
         ReadAllDownloadedLevels();
-        gridController.InitializeLevel(levels[index]);
     }
 
     private void ReadAllDownloadedLevels()
     {
-        DirectoryInfo dir = new DirectoryInfo(directoryPath);
+        DirectoryInfo dir = new DirectoryInfo(urlData.filePath);
         FileInfo[] files = dir.GetFiles("*.*");
 
         foreach (FileInfo file in files)

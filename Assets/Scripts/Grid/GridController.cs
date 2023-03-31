@@ -28,9 +28,19 @@ public class GridController : MonoBehaviour
     public int AvailableMatchCount => availableMatchCount;
     #endregion
 
+    #region Components
+    private LevelReader levelReader;
+    #endregion
+
+    private void Start()
+    {
+        levelReader = GetComponent<LevelReader>();
+        InitializeLevel(levelReader.Levels[PlayerPrefs.GetInt("SelectedLevel",1) - 1]);
+    }
     public void InitializeLevel(LevelData levelData)
     {
         levelNumber = levelData.levelNumber;
+        name = $"Level {levelNumber} Grid";
         gridColumnCount = levelData.gridWidth;
         gridRowCount = levelData.gridHeight;
         maxMoveCount = levelData.moveCount;
