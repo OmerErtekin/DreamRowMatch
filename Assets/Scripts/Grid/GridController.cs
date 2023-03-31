@@ -11,7 +11,7 @@ public class GridController : MonoBehaviour
 
     private List<GridObjectTypes> gridFormation;
     private int gridRowCount, gridColumnCount;
-    private int maxMoveCount, currentMoveCount;
+    private int maxMoveCount;
     private BackgroundTile[,] bgTileMatrix;
     private Grid[,] gridMatrix;
     private Vector3[,] positionMatrix;
@@ -26,6 +26,7 @@ public class GridController : MonoBehaviour
     public int RowCount => gridRowCount;
     public int ColumnCount => gridColumnCount;
     public int AvailableMatchCount => availableMatchCount;
+    public int MaxMoveCount => maxMoveCount;
     #endregion
 
     #region Components
@@ -45,7 +46,7 @@ public class GridController : MonoBehaviour
         gridRowCount = levelData.gridHeight;
         maxMoveCount = levelData.moveCount;
         gridFormation = levelData.gridFormation;
-
+        GameUIController.Instance.InitializeGameUI(levelData);
         CreateGrid();
     }
 

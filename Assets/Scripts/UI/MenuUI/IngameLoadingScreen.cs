@@ -11,6 +11,7 @@ public class IngameLoadingScreen : MonoBehaviour
     #endregion
     #region Variables
     private int sceneIndex;
+    public bool DidComeFromGameplay { get; private set; } = false;
     #endregion
 
     private void Awake()
@@ -28,13 +29,15 @@ public class IngameLoadingScreen : MonoBehaviour
 
     public void LoadGameplayLevel()
     {
+        DidComeFromGameplay = false;
         sceneIndex = 2;
         ShowLoadingScreen(true);
         Invoke(nameof(LoadLevel), 2);
     }
 
-    public void ReturnMainLevel()
+    public void LoadMenuScene()
     {
+        DidComeFromGameplay = true;
         sceneIndex = 1;
         ShowLoadingScreen(true);
         Invoke(nameof(LoadLevel), 2);

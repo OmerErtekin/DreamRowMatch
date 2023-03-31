@@ -1504,6 +1504,7 @@ MonoBehaviour:
   - {fileID: 652402477}
   - {fileID: 651390283}
   - {fileID: 1935655353}
+  highestScoreText: {fileID: 1935655354}
 --- !u!114 &654097341
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3710,7 +3711,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "HIGHEST SCORE \n1502"
+  m_text: "NEW HIGHEST SCORE \n1502"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5069e5fee171cc64f9bdbf0e3d15a913, type: 2}
   m_sharedMaterial: {fileID: -3447862665440426507, guid: 5069e5fee171cc64f9bdbf0e3d15a913,

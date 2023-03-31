@@ -7,6 +7,7 @@ public class Grid : MonoBehaviour
     #region Variables
     [SerializeField] private Transform objectContainer;
     [SerializeField] private List<Sprite> typeSprites;
+    [SerializeField] private List<int> scoreList;
     private GridObjectTypes objectType;
     private GridIndex gridIndex;
     #endregion
@@ -46,8 +47,11 @@ public class Grid : MonoBehaviour
         transform.DOKill();
         transform.DOShakeRotation(1f, new Vector3(0, 0, 90)).SetTarget(this);
         transform.DOScale(1, 0.25f).SetTarget(true).SetEase(Ease.OutBack).From(0);
+        GameUIController.Instance.UpdateCurrentScore(scoreList[(int)objectType]);
+
         objectType = GridObjectTypes.Matched;
         objectSprite.sprite = typeSprites[(int)objectType];
+        
     }
 }
 

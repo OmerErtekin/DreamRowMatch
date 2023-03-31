@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Celebration : MonoBehaviour
@@ -9,6 +10,7 @@ public class Celebration : MonoBehaviour
     [SerializeField] private List<Transform> objectsToScale;
     #endregion
     #region Components
+    [SerializeField] private TMP_Text highestScoreText;
     #endregion
     void Start()
     {
@@ -26,6 +28,8 @@ public class Celebration : MonoBehaviour
     public void CelebrateHighestScore()
     {
         gameObject.SetActive(true);
+        int currentLevel = PlayerPrefs.GetInt("SelectedLevel");
+        highestScoreText.text = $"NEW HIGHEST SCORE\n{PlayerPrefs.GetInt($"HighScore_Level{currentLevel}")}";
         StartCoroutine(ScaleUpRoutine());
     }
 

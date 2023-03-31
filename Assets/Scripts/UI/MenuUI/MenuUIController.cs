@@ -19,13 +19,11 @@ public class MenuUIController : MonoBehaviour
 
     private void Start()
     {
-        if (PlayerPrefs.GetInt("DidComeFromGame", 0) == 1)
+        if (IngameLoadingScreen.Instance.DidComeFromGameplay)
         {
             IngameLoadingScreen.Instance.HideLoadingScreen(true);
             StartCoroutine(CameFromMenuRoutine());
         }
-
-        PlayerPrefs.SetInt("DidComeFromGame", 0);
     }
 
     private IEnumerator CameFromMenuRoutine()

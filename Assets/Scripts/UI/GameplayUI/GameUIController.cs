@@ -1,28 +1,75 @@
+using DG.Tweening;
 using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameUIController : MonoBehaviour
 {
-    private IEnumerator Start()
+    #region Components
+    public static GameUIController Instance;
+    [SerializeField] private TMP_Text moveText, highScoreText,currentScoreText;
+    #endregion
+
+    #region Variables
+    private LevelData currentLevelData;
+    private int highScore,currentScore;
+    private bool didBeatHighScore = false;
+    #endregion
+
+    private void Awake()
     {
-        IngameLoadingScreen.Instance.ShowLoadingScreen(false);
-        yield return new WaitForFixedUpdate();
+        Instance = this;
+    }
+
+    private void Start()
+    {
         IngameLoadingScreen.Instance.HideLoadingScreen(true);
     }
 
-    private void Update()
+    public void InitializeGameUI(LevelData levelData)
     {
-        if(Input.GetKeyUp(KeyCode.G))
+        currentLevelData = levelData;
+        moveText.text = currentLevelData.moveCount.ToString();
+        highScore = PlayerPrefs.GetInt($"HighScore_Level{currentLevelData.levelNumber}");
+        highScoreText.text = highScore.ToString();
+    }
+
+    public void UpdateMoveText(int moveCount)
+    {
+        UpdateTextWithAnim(moveText, moveCount.ToString());
+    }
+
+    public void UpdateCurrentScore(int additionalScore)
+    {
+        currentScore += additionalScore;
+        UpdateTextWithAnim(currentScoreText,currentScore.ToString());
+        if(currentScore > highScore)
         {
-            ReturnToMainMenu();
+            didBeatHighScore = true;
+            highScore = currentScore;
+            UpdateHighScore(highScore);
         }
+    }
+
+    public void UpdateHighScore(int score)
+    {
+        UpdateTextWithAnim(highScoreText, score.ToString());
+    }
+
+    private void UpdateTextWithAnim(TMP_Text textRef,string text)
+    {
+        textRef.DOKill();
+        textRef.transform.DOScale(1, 0.25f).From(0.75f).SetEase(Ease.OutBack);
+        textRef.text = text;
     }
 
     public void ReturnToMainMenu()
     {
-        PlayerPrefs.SetInt("DidComeFromGame", 1);
-        IngameLoadingScreen.Instance.ReturnMainLevel();
-    }
+        if(didBeatHighScore)
+            PlayerPrefs.SetInt($"HighScore_Level{currentLevelData.levelNumber}",highScore);
 
+        PlayerPrefs.SetInt("HasNewHighScore",didBeatHighScore ? 1 : 0);
+
+        IngameLoadingScreen.Instance.LoadMenuScene();
+    }
 }

@@ -5,6 +5,7 @@ public class GridSwiper : MonoBehaviour
 {
     #region Variables
     [SerializeField] private float swipeDuration = 0.25f;
+    private int moveCount;
     private bool isSwiping = false;
     #endregion
     #region Components
@@ -16,7 +17,8 @@ public class GridSwiper : MonoBehaviour
 
     public bool CanSwipeTheGrid(Grid grid, Direction swipeDirection)
     {
-        if (isSwiping) return false;
+        if (isSwiping || moveCount >= gridController.MaxMoveCount) return false;
+
         return gridController.CanSwipeTheGrid(grid, swipeDirection);
     }
 
@@ -52,5 +54,8 @@ public class GridSwiper : MonoBehaviour
 
         gridController.GridMatrix[index1.row, index1.column] = grid2;
         gridController.GridMatrix[index2.row, index2.column] = grid1;
+
+        moveCount++;
+        GameUIController.Instance.UpdateMoveText(gridController.MaxMoveCount - moveCount);
     }
 }
