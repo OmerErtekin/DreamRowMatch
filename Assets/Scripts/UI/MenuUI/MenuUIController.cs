@@ -6,6 +6,7 @@ public class MenuUIController : MonoBehaviour
     #region Components
     public static MenuUIController Instance;
     [SerializeField] private LevelViewer levelViewer;
+    [SerializeField] private Celebration celebration;
     #endregion
     #region Variables
     #endregion
@@ -16,7 +17,7 @@ public class MenuUIController : MonoBehaviour
 
     private void Start()
     {
-        if (PlayerPrefs.GetInt("DidComeFromGame", 0) == 1)
+        if (PlayerPrefs.GetInt("DidComeFromGame", 1) == 1)
         {
             IngameLoadingScreen.Instance.HideLoadingScreen(true);
             StartCoroutine(CameFromMenuRoutine());
@@ -31,18 +32,18 @@ public class MenuUIController : MonoBehaviour
     private IEnumerator CameFromMenuRoutine()
     {
         yield return new WaitForSeconds(1);
-        if (PlayerPrefs.GetInt("HasNewHighScore", 0) == 1)
+        if (PlayerPrefs.GetInt("HasNewHighScore", 1) == 1)
         {
-
+            celebration.CelebrateHighestScore();
         }
         else
         {
-            ShowLevelViewer();
+            ShowLevelViewer(false);
         }
     }
 
-    public void ShowLevelViewer()
+    public void ShowLevelViewer(bool willUnlockNextLevel)
     {
-        levelViewer.ShowLevelViewer();
+        levelViewer.ShowLevelViewer(willUnlockNextLevel);
     }
 }

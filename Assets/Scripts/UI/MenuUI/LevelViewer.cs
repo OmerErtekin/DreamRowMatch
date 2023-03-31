@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ public class LevelViewer : MonoBehaviour
     #region Components
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Scrollbar scrollBar;
+    [SerializeField] private ScrollRect scrollRect;
     private LevelReader levelReader;
     #endregion
     #region Variables
@@ -22,11 +24,22 @@ public class LevelViewer : MonoBehaviour
         levelReader = GetComponent<LevelReader>();
         GenerateLevelBars();
     }
-    public void ShowLevelViewer()
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
+            TryUnlockNextLevel();
+    }
+
+    public void ShowLevelViewer(bool willUnlockNextLevel = false)
     {
         gameObject.SetActive(true);
         canvasGroup.DOKill();
         canvasGroup.DOFade(1, 0.5f).SetTarget(this).From(0);
+        if (willUnlockNextLevel)
+        {
+            Invoke(nameof(TryUnlockNextLevel),1);
+        }
     }
 
     public void HideLevelViewer()
@@ -34,6 +47,16 @@ public class LevelViewer : MonoBehaviour
         canvasGroup.DOKill();
         canvasGroup.DOFade(0, 0.5f).SetTarget(this).OnComplete(() => gameObject.SetActive(false));
     }
+
+    public void TryUnlockNextLevel()
+    {
+        if (PlayerPrefs.GetInt("MaxLevel", 1) > PlayerPrefs.GetInt("SelectedLevel", 1) || PlayerPrefs.GetInt("MaxLevel", 1) >= levelBars.Count)
+        {
+            return;
+        }
+        StartCoroutine(UnlockRoutine());
+    }
+
 
     private void GenerateLevelBars()
     {
@@ -43,16 +66,40 @@ public class LevelViewer : MonoBehaviour
             levelBars[i].InitializeLevelBar(levelReader.Levels[i]);
         }
 
-        SetScrollBarPosForIndex(PlayerPrefs.GetInt("SelectedLevel", 0));
+        SetScrollBarPosForIndex(PlayerPrefs.GetInt("SelectedLevel", 1));
     }
 
-    private void SetScrollBarPosForIndex(int index)
+    private void SetScrollBarPosForIndex(int index, float tweenDuration = 0)
     {
         if (index < 4)
             scrollBar.value = 1;
         if (index > levelReader.Levels.Count - visibleBarCount)
             scrollBar.value = 0;
 
-        scrollBar.value = 1 - ((float)(index - 1) / (levelReader.Levels.Count - visibleBarCount + 1 - 1 / visibleBarCount));
+        var value = 1 - ((float)(index - 1) / (levelReader.Levels.Count - visibleBarCount + 1 - 1 / visibleBarCount));
+        if (tweenDuration == 0)
+            scrollBar.value = value;
+        else
+        {
+            var currentValue = scrollBar.value;
+            DOTween.To(() => currentValue, x => currentValue = x, value, tweenDuration)
+               .OnUpdate(() =>
+               {
+                   scrollBar.value = currentValue;
+               });
+        }
+    }
+
+    private IEnumerator UnlockRoutine()
+    {
+        scrollRect.vertical = false;
+        int nextIndex = PlayerPrefs.GetInt("MaxLevel", 1);
+        SetScrollBarPosForIndex(nextIndex + 1, 0.5f);
+
+        yield return new WaitForSeconds(0.5f);
+        levelBars[nextIndex].UnlockLevel();
+
+        yield return new WaitForSeconds(1);
+        scrollRect.vertical = true;
     }
 }

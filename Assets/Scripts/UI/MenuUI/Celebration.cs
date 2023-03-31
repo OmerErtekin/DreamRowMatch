@@ -41,6 +41,9 @@ public class Celebration : MonoBehaviour
             objectsToScale[i].DOScale(1, 1f).From(0).SetTarget(this).SetEase(Ease.OutBack);
             yield return new WaitForSeconds(0.3f);
         }
+
+        yield return new WaitForSeconds(3.5f);
+        HideCelebration();
     }
 
     private IEnumerator ScaleDownRoutine()
@@ -51,8 +54,8 @@ public class Celebration : MonoBehaviour
             yield return new WaitForSeconds(0.15f);
         }
 
-        yield return new WaitForSeconds(0.85f);
-        MenuUIController.Instance.ShowLevelViewer();
+        yield return new WaitForSeconds(1.25f);
+        MenuUIController.Instance.ShowLevelViewer(true);
         gameObject.SetActive(false);
     }
 }

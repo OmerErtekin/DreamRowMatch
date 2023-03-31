@@ -33,18 +33,8 @@ public class GridSwiper : MonoBehaviour
         PerformSwipe(grid, grid2);
 
         yield return new WaitForSeconds(swipeDuration);
-
-        if (gridController.CheckIsRowMatch(grid.CurrentGridIndex.row) | gridController.CheckIsRowMatch(grid2.CurrentGridIndex.row))
-        {
-            gridController.CalculateAvailableMatchs();
-            isSwiping = false;
-            yield break;
-        }
-            
-        PerformSwipe(grid, grid2);
-
-        yield return new WaitForSeconds(swipeDuration);
-
+        gridController.CheckIsRowMatch(grid.CurrentGridIndex.row);
+        gridController.CheckIsRowMatch(grid2.CurrentGridIndex.row);
         gridController.CalculateAvailableMatchs();
         isSwiping = false;
     }

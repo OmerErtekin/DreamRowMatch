@@ -19,7 +19,7 @@ public class LevelBar : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.U))
         {
-            StartUnlockAnimation();
+            UnlockLevel();
         }
     }
     public void InitializeLevelBar(LevelData data)
@@ -42,12 +42,13 @@ public class LevelBar : MonoBehaviour
         }
     }
 
-    public void StartUnlockAnimation()
+    public void UnlockLevel()
     {
         playGroup.alpha = 0;
         playGroup.gameObject.SetActive(true);
         lockedGroup.DOFade(0, 1f).SetTarget(this).SetUpdate(true).OnComplete(()=> lockedGroup.gameObject.SetActive(false));
         playGroup.DOFade(1, 1f).SetTarget(this).SetUpdate(true);
+        PlayerPrefs.SetInt("MaxLevel", levelData.levelNumber);
     }
 
     public void OnPlayButtonClicked()
