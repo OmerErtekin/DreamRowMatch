@@ -4,10 +4,15 @@ using UnityEngine;
 public class MenuUIController : MonoBehaviour
 {
     #region Components
+    public static MenuUIController Instance;
     [SerializeField] private LevelViewer levelViewer;
     #endregion
     #region Variables
     #endregion
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -32,7 +37,12 @@ public class MenuUIController : MonoBehaviour
         }
         else
         {
-            levelViewer.ShowLevelViewer();
+            ShowLevelViewer();
         }
+    }
+
+    public void ShowLevelViewer()
+    {
+        levelViewer.ShowLevelViewer();
     }
 }
