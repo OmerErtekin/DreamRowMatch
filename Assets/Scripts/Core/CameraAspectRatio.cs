@@ -2,11 +2,17 @@ using UnityEngine;
 
 public class CameraAspectRatio : MonoBehaviour
 {
+    #region Variables
     [SerializeField] private float multiplierOnLandscape = 0.75f;
-    private Camera orthoCamera;
     private float lastResWidth, lastResHeight;
     private bool isLandscape;
     private int targetCount;
+    #endregion
+
+    #region Components
+    private Camera orthoCamera;
+    #endregion
+
     private void Awake()
     {
         orthoCamera = GetComponent<Camera>();

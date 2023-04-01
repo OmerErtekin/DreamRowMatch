@@ -1,5 +1,4 @@
 using DG.Tweening;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,6 +8,7 @@ public class IngameLoadingScreen : MonoBehaviour
     public static IngameLoadingScreen Instance;
     [SerializeField] private CanvasGroup canvasGroup;
     #endregion
+
     #region Variables
     private int sceneIndex;
     public bool DidComeFromGameplay { get; private set; } = false;

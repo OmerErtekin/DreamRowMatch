@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -12,8 +11,10 @@ using UnityEditor;
 #endif
 public class LevelDownloader : MonoBehaviour
 {
+    #region Components
     [SerializeField] private UrlData urlData;
     [SerializeField] private Image fillbarImage;
+    #endregion
 
     IEnumerator Start()
     {

@@ -10,6 +10,7 @@ public class SwipeInputHandler : MonoBehaviour
     private Direction swipeDirection = Direction.None;
     private bool isMadeAMove = false;
     #endregion
+
     #region Components
     private GameUIController gameUIController;
     private Camera mainCamera;

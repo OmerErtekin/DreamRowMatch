@@ -20,6 +20,7 @@ public class GridCreator : MonoBehaviour
     public GridObject[,] GridMatrix => gridMatrix;
     public Vector3[,] PositionMatrix => positionMatrix;
     #endregion
+
     #region Components
     private LevelReader levelReader;
     #endregion

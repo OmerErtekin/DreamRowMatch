@@ -10,8 +10,10 @@ public class MenuUIController : MonoBehaviour
     [SerializeField] private LevelViewer levelViewer;
     [SerializeField] private Celebration celebration;
     #endregion
+
     #region Variables
     #endregion
+
     private void Awake()
     {
         Instance = this;

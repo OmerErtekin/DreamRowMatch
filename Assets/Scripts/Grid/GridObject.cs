@@ -11,10 +11,12 @@ public class GridObject : MonoBehaviour
     private GridObjectTypes objectType;
     private GridIndex gridIndex;
     #endregion
+
     #region Components
     private SpriteRenderer objectSprite;
     private Collider gridCollider;
     #endregion
+
     #region Properties
     public GridIndex CurrentGridIndex => gridIndex;
     public GridObjectTypes ObjectType => objectType;

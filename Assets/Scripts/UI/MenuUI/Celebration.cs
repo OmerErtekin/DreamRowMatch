@@ -9,21 +9,10 @@ public class Celebration : MonoBehaviour
     #region Variables
     [SerializeField] private List<Transform> objectsToScale;
     #endregion
+
     #region Components
     [SerializeField] private TMP_Text highestScoreText;
     #endregion
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.C))
-            CelebrateHighestScore();
-        if (Input.GetKeyDown(KeyCode.S))
-            HideCelebration();
-    }
 
     public void CelebrateHighestScore()
     {

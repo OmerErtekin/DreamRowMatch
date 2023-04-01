@@ -12,18 +12,13 @@ public class LevelViewer : MonoBehaviour
     [SerializeField] private ScrollRect scrollRect;
     [SerializeField] private LevelReader levelReader;
     #endregion
+
     #region Variables
     [SerializeField] private Transform contentTransform;
     [SerializeField] private GameObject levelBarPrefab;
     [SerializeField] private int visibleBarCount = 5;
     private List<LevelBar> levelBars = new();
     #endregion
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-            TryUnlockNextLevel();
-    }
 
     public void ShowLevelViewer(bool willUnlockNextLevel = false)
     {

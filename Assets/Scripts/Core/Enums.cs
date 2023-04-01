@@ -1,5 +1,3 @@
-
-
 public enum GridObjectTypes
 {
     Red,
@@ -8,7 +6,6 @@ public enum GridObjectTypes
     Yellow,
     Matched,
 }
-
 
 public enum Direction 
 { 

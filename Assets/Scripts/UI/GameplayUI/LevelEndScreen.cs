@@ -10,6 +10,7 @@ public class LevelEndScreen : MonoBehaviour
     [SerializeField] private TMP_Text currentScoreText, highScoreText;
     [SerializeField] private Animator endScreenAnimator;
     #endregion
+
     #region Variables
     [SerializeField] private RectTransform noMoreMatchParent, outOfMoveParent;
     #endregion

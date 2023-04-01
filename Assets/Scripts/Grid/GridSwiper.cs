@@ -8,10 +8,12 @@ public class GridSwiper : MonoBehaviour
     private int moveCount;
     private bool isSwiping = false;
     #endregion
+
     #region Components
     [SerializeField] private GridController gridController;
     private GameUIController gameUIController;
     #endregion
+
     #region Properties
     public bool IsSwiping => isSwiping;
     #endregion

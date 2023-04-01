@@ -9,9 +9,11 @@ public class LevelReader : MonoBehaviour
     [SerializeField] private UrlData urlData;
     private List<LevelData> levels = new();
     #endregion
+
     #region Properties
     public List<LevelData> Levels => levels;
     #endregion
+
     void Awake()
     {
         ReadAllDownloadedLevels();
@@ -69,7 +71,6 @@ public class LevelReader : MonoBehaviour
 
             levels.Add(newLevel);
         }
-
         levels = levels.OrderBy(x => x.levelNumber).ToList();
     }
 

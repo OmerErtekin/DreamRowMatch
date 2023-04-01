@@ -1,9 +1,6 @@
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class LevelBar : MonoBehaviour
 {
@@ -15,17 +12,9 @@ public class LevelBar : MonoBehaviour
     private LevelData levelData;
     #endregion
 
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.U))
-        {
-            UnlockLevel();
-        }
-    }
     public void InitializeLevelBar(LevelData data)
     {
         levelData = data;
-
         levelAndMoveText.text = $"Level {levelData.levelNumber} - {levelData.moveCount} Moves";
 
         bool canPlay = PlayerPrefs.GetInt("MaxLevel", 1) >= levelData.levelNumber;

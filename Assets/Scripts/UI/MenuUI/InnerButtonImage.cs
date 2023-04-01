@@ -4,10 +4,14 @@ using UnityEngine.UI;
 
 public class InnerButtonImage : MonoBehaviour
 {
-    [SerializeField] private Button buttonToSucsribe;
+    #region Variables    
     [SerializeField] private Vector3 clickedScale;
     private Vector3 normalScale;
+    #endregion
 
+    #region Components
+    [SerializeField] private Button buttonToSucsribe;
+    #endregion
 
     private void Start()
     {
