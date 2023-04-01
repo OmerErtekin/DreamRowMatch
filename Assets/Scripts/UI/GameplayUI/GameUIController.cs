@@ -36,6 +36,7 @@ public class GameUIController : MonoBehaviour
         currentLevelData = levelData;
         moveText.text = currentLevelData.moveCount.ToString();
         highScore = PlayerPrefs.GetInt($"HighScore_Level{currentLevelData.levelNumber}");
+        currentScoreText.text = "0";
         highScoreText.text = highScore.ToString();
     }
 
