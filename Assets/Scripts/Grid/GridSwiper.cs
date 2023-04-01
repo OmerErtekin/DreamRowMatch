@@ -43,7 +43,6 @@ public class GridSwiper : MonoBehaviour
         yield return new WaitForSeconds(swipeDuration);
         gridController.CheckIsRowMatch(grid.CurrentGridIndex.row);
         gridController.CheckIsRowMatch(grid2.CurrentGridIndex.row);
-        gridController.CalculateAvailableMatchs();
         isSwiping = false;
     }
 
@@ -61,7 +60,7 @@ public class GridSwiper : MonoBehaviour
         gridController.GridMatrix[index1.row, index1.column] = grid2;
         gridController.GridMatrix[index2.row, index2.column] = grid1;
 
-        moveCount++;
+        //moveCount++;
         gameUIController.UpdateMoveText(gridController.MaxMoveCount - moveCount);
         if(moveCount >= gridController.MaxMoveCount)
         {

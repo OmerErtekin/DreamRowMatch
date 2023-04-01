@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GridController : MonoBehaviour
@@ -8,25 +8,21 @@ public class GridController : MonoBehaviour
     [SerializeField] private GameObject gridPrefab, backgroundPrefab;
     [SerializeField] private Transform backgroudParent;
     [SerializeField] private float spacingBetweenGrids = 1f;
-
-    private List<GridObjectTypes> gridFormation;
-    private int gridRowCount, gridColumnCount;
-    private int maxMoveCount;
+    private LevelData currentLevelData;
     private BackgroundTile[,] bgTileMatrix;
     private Grid[,] gridMatrix;
     private Vector3[,] positionMatrix;
-    private List<RowWithMaxElement> potentialRowAndElements = new();
-    private int availableMatchCount;
-    private int levelNumber;
-
+    private bool isThereAvailableMatch = true;
+    private List<int> matchedRows = new();
+    private int[] elementsBetweenRows;
     #endregion
+
     #region Properties
     public Grid[,] GridMatrix => gridMatrix;
     public Vector3[,] PositionMatrix => positionMatrix;
-    public int RowCount => gridRowCount;
-    public int ColumnCount => gridColumnCount;
-    public int AvailableMatchCount => availableMatchCount;
-    public int MaxMoveCount => maxMoveCount;
+    public int RowCount => currentLevelData.gridHeight;
+    public int ColumnCount => currentLevelData.gridWidth;
+    public int MaxMoveCount => currentLevelData.moveCount;
     #endregion
 
     #region Components
@@ -36,38 +32,34 @@ public class GridController : MonoBehaviour
     private void Start()
     {
         levelReader = GetComponent<LevelReader>();
-        InitializeLevel(levelReader.Levels[PlayerPrefs.GetInt("SelectedLevel",1) - 1]);
+        InitializeLevel(levelReader.Levels[PlayerPrefs.GetInt("SelectedLevel", 1) - 1]);
     }
     public void InitializeLevel(LevelData levelData)
     {
-        levelNumber = levelData.levelNumber;
-        name = $"Level {levelNumber} Grid";
-        gridColumnCount = levelData.gridWidth;
-        gridRowCount = levelData.gridHeight;
-        maxMoveCount = levelData.moveCount;
-        gridFormation = levelData.gridFormation;
-        GameUIController.Instance.InitializeGameUI(levelData);
+        currentLevelData = levelData;
+        name = $"Level {currentLevelData.levelNumber} Grid";
+        GameUIController.Instance.InitializeGameUI(currentLevelData);
         CreateGrid();
     }
 
     private void CreateGrid()
     {
-        if (gridFormation.Count != gridRowCount * gridColumnCount)
+        if (currentLevelData.gridFormation.Count != currentLevelData.gridHeight * ColumnCount)
         {
             Debug.LogWarning("Wrong Formation!");
             return;
         }
 
-        gridMatrix = new Grid[gridRowCount, gridColumnCount];
-        positionMatrix = new Vector3[gridRowCount, gridColumnCount];
-        bgTileMatrix = new BackgroundTile[gridRowCount, gridColumnCount];
+        gridMatrix = new Grid[RowCount, ColumnCount];
+        positionMatrix = new Vector3[RowCount, ColumnCount];
+        bgTileMatrix = new BackgroundTile[RowCount, ColumnCount];
 
-        Vector3 startPoint = transform.position - new Vector3((gridColumnCount - 1) * spacingBetweenGrids / 2, (gridRowCount - 1) * spacingBetweenGrids / 2, 0);
-        for (int i = 0; i < gridRowCount; i++)
+        Vector3 startPoint = transform.position - new Vector3((ColumnCount - 1) * spacingBetweenGrids / 2, (RowCount - 1) * spacingBetweenGrids / 2, 0);
+        for (int i = 0; i < RowCount; i++)
         {
-            for (int j = 0; j < gridColumnCount; j++)
+            for (int j = 0; j < ColumnCount; j++)
             {
-                int index = j + i * gridColumnCount;
+                int index = j + i * ColumnCount;
                 Vector3 targetPosition = startPoint + new Vector3(j * spacingBetweenGrids, i * spacingBetweenGrids, 0);
 
                 var gridScript = Instantiate(gridPrefab, targetPosition, transform.rotation, transform).GetComponent<Grid>();
@@ -75,11 +67,11 @@ public class GridController : MonoBehaviour
 
                 gridMatrix[i, j] = gridScript;
                 positionMatrix[i, j] = targetPosition;
-                gridScript.InitializeGrid(i, j, gridFormation[index]);
+                gridScript.InitializeGrid(i, j, currentLevelData.gridFormation[index]);
             }
         }
 
-        CalculateAvailableMatchs();
+        CheckAvailableMatches();
         GenerateBackgroundBorders();
     }
 
@@ -97,76 +89,72 @@ public class GridController : MonoBehaviour
         }
     }
 
-    public void CalculateAvailableMatchs()
+    public void CheckAvailableMatches()
     {
-        if (gridColumnCount <= 1) return;
-        availableMatchCount = 0;
+        if (matchedRows.Count == 0) return;
 
-        SetPotantielRowAndElements();
-        if (potentialRowAndElements.Count == 0)
-            return;
+        isThereAvailableMatch = MatchBetweenBot_FirstMatchedRow() || MatchBetweenTop_LastMatchedRow()
+            || MatchBetweenMatchedRows();
 
+        if (!isThereAvailableMatch)
+            GameUIController.Instance.FinishTheGame(GameEndType.NoMoreMatch);
+    }
 
-        for (int i = 0; i < potentialRowAndElements.Count; i++)
+    private bool MatchBetweenTop_LastMatchedRow()
+    {
+        if (matchedRows.Max() == RowCount - 1) return false;
+
+        elementsBetweenRows = new int[(int)GridObjectTypes.Matched];
+
+        for (int i = matchedRows.Max(); i < RowCount; i++)
         {
-            if (CanMatchWithOneMovement(i, Direction.Up) || CanMatchWithOneMovement(i, Direction.Down))
+            for (int j = 0; j < ColumnCount; j++)
             {
-                availableMatchCount++;
+                if (gridMatrix[i, j].ObjectType != GridObjectTypes.Matched)
+                    elementsBetweenRows[(int)GridMatrix[i, j].ObjectType]++;
             }
         }
 
+        return elementsBetweenRows.Max() >= ColumnCount;
     }
 
-    private bool CanMatchWithOneMovement(int possibleRowIndex, Direction direction)
+    private bool MatchBetweenBot_FirstMatchedRow()
     {
-        //After finding which object is different, then we will check if we can replace this object with up or down and have a match in this case.
-        var grid = GetDifferentElementOnRow(potentialRowAndElements[possibleRowIndex]);
+        if (matchedRows.Min() == 0) return false;
 
-        return CanSwipeTheGrid(grid, direction) &&
-            GetGridToSwipe(grid.CurrentGridIndex, direction).ObjectType == potentialRowAndElements[possibleRowIndex].MaxElementType;
-    }
+        elementsBetweenRows = new int[(int)GridObjectTypes.Matched];
 
-    private void SetPotantielRowAndElements()
-    {
-        potentialRowAndElements.Clear();
-
-        for (int i = 0; i < gridRowCount; i++)
+        for (int i = 0; i < matchedRows.Min(); i++)
         {
-            //First calculate the object counts on each row and store it on the array
-            int[] rowElements = new int[(int)GridObjectTypes.Matched];
-
-            for (int j = 0; j < gridColumnCount; j++)
+            for (int j = 0; j < ColumnCount; j++)
             {
-                if (GridMatrix[i, j].ObjectType != GridObjectTypes.Matched)
-                    rowElements[(int)GridMatrix[i, j].ObjectType]++;
+                if (gridMatrix[i, j].ObjectType != GridObjectTypes.Matched)
+                    elementsBetweenRows[(int)GridMatrix[i, j].ObjectType]++;
             }
+        }
 
-            for (int k = 0; k < rowElements.Length; k++)
+        return elementsBetweenRows.Max() >= ColumnCount;
+    }
+
+    private bool MatchBetweenMatchedRows()
+    {
+        if (matchedRows.Count <= 1) return false;
+
+        for (int i = 0; i < matchedRows.Count - 1; i++)
+        {
+            elementsBetweenRows = new int[(int)GridObjectTypes.Matched];
+            for (int j = matchedRows[i]; j < matchedRows[i + 1]; j++)
             {
-                //If any row has an object gridColumn - 1 times, it would be a potential match so we will check it afterwards
-                if (rowElements[k] == gridColumnCount - 1)
+                for (int k = 0; k < ColumnCount; k++)
                 {
-                    RowWithMaxElement possibleElement = new()
-                    {
-                        RowNumber = i,
-                        MaxElementType = (GridObjectTypes)Enum.ToObject(typeof(GridObjectTypes), k)
-                    };
-                    potentialRowAndElements.Add(possibleElement);
-                    break;
+                    if (gridMatrix[j, k].ObjectType != GridObjectTypes.Matched)
+                        elementsBetweenRows[(int)GridMatrix[j, k].ObjectType]++;
                 }
             }
+            if (elementsBetweenRows.Max() >= ColumnCount)
+                return true;
         }
-    }
-
-    private Grid GetDifferentElementOnRow(RowWithMaxElement rowWithElement)
-    {
-        //If we have a potential row, we should have only one different element in this row.This functions find this element.
-        for (int i = 0; i < gridColumnCount; i++)
-        {
-            if (gridMatrix[rowWithElement.RowNumber, i].ObjectType != rowWithElement.MaxElementType)
-                return gridMatrix[rowWithElement.RowNumber, i];
-        }
-        return null;
+        return false;
     }
 
     public Grid GetGridToSwipe(GridIndex gridPosition, Direction swipeDirection)
@@ -192,11 +180,11 @@ public class GridController : MonoBehaviour
 
         return swipeDirection switch
         {
-            Direction.Up => gridIndex.row < gridRowCount - 1 && GetGridToSwipe(gridIndex, swipeDirection).ObjectType != GridObjectTypes.Matched,
+            Direction.Up => gridIndex.row < RowCount - 1 && GetGridToSwipe(gridIndex, swipeDirection).ObjectType != GridObjectTypes.Matched,
 
             Direction.Down => gridIndex.row > 0 && GetGridToSwipe(gridIndex, swipeDirection).ObjectType != GridObjectTypes.Matched,
 
-            Direction.Right => gridIndex.column < gridColumnCount - 1 && GetGridToSwipe(gridIndex, swipeDirection).ObjectType != GridObjectTypes.Matched,
+            Direction.Right => gridIndex.column < ColumnCount - 1 && GetGridToSwipe(gridIndex, swipeDirection).ObjectType != GridObjectTypes.Matched,
 
             Direction.Left => gridIndex.column > 0 && GetGridToSwipe(gridIndex, swipeDirection).ObjectType != GridObjectTypes.Matched,
 
@@ -204,13 +192,13 @@ public class GridController : MonoBehaviour
         };
     }
 
-    public bool CheckIsRowMatch(int rowIndex)
+    public void CheckIsRowMatch(int rowIndex)
     {
-        if (gridColumnCount <= 1) return false;
+        if (ColumnCount <= 1) return;
 
         GridObjectTypes searchedType = GridMatrix[rowIndex, 0].ObjectType;
         bool isThereRowMatch = true;
-        for (int i = 1; i < gridColumnCount; i++)
+        for (int i = 1; i < ColumnCount; i++)
         {
             if (GridMatrix[rowIndex, i].ObjectType != searchedType)
             {
@@ -221,12 +209,14 @@ public class GridController : MonoBehaviour
 
         if (isThereRowMatch)
         {
-            for (int i = 0; i < gridColumnCount; i++)
+            matchedRows.Add(rowIndex);
+            matchedRows.Sort();
+            for (int i = 0; i < ColumnCount; i++)
             {
                 GridMatrix[rowIndex, i].SetGridMatched();
             }
-        }
 
-        return isThereRowMatch;
+            CheckAvailableMatches();
+        }
     }
 }

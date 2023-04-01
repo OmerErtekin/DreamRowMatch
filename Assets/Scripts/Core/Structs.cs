@@ -2,13 +2,6 @@ using System;
 using System.Collections.Generic;
 
 [Serializable]
-public struct RowWithMaxElement
-{
-    public int RowNumber;
-    public GridObjectTypes MaxElementType;
-}
-
-[Serializable]
 public struct GridIndex
 {
     public int row; public int column;
