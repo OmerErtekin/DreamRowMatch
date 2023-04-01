@@ -1,5 +1,4 @@
 using DG.Tweening;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -29,9 +28,10 @@ public class GameUIController : MonoBehaviour
     private void Start()
     {
         IngameLoadingScreen.Instance.HideLoadingScreen(true);
+        GridCreator.OnGridCreated += InitializeGameUI;
     }
 
-    public void InitializeGameUI(LevelData levelData)
+    private void InitializeGameUI(LevelData levelData)
     {
         currentLevelData = levelData;
         moveText.text = currentLevelData.moveCount.ToString();

@@ -93,9 +93,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4723127729420011878}
-  - component: {fileID: 1840788075752231155}
   - component: {fileID: 8347738904807494674}
   - component: {fileID: 499766915182217573}
+  - component: {fileID: 9084451296963278514}
   m_Layer: 6
   m_Name: Grid
   m_TagString: Untagged
@@ -119,26 +119,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1840788075752231155
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2944622198843954516}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e2199efa64f43a458683185188e8c2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectContainer: {fileID: 2698285108017589191}
-  typeSprites:
-  - {fileID: 21300000, guid: 140169fe467b8b649aa2541e0c8d6c09, type: 3}
-  - {fileID: 21300000, guid: 50dd2e8acaa7426438d693e39eb73026, type: 3}
-  - {fileID: 21300000, guid: 23c39604c54f9f944ac7791b186f3dce, type: 3}
-  - {fileID: 21300000, guid: a292bddf8693e00428dace4a7f770aa6, type: 3}
-  - {fileID: 21300000, guid: 1554c51b5f8695e448fe80eded370d3b, type: 3}
-  scoreList: 6400000096000000c8000000fa000000
 --- !u!65 &8347738904807494674
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -168,3 +148,23 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 1
+--- !u!114 &9084451296963278514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2944622198843954516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be7519f7b032bad46ac5891d0b928376, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectContainer: {fileID: 2698285108017589191}
+  typeSprites:
+  - {fileID: 21300000, guid: 140169fe467b8b649aa2541e0c8d6c09, type: 3}
+  - {fileID: 21300000, guid: 50dd2e8acaa7426438d693e39eb73026, type: 3}
+  - {fileID: 21300000, guid: a292bddf8693e00428dace4a7f770aa6, type: 3}
+  - {fileID: 21300000, guid: 23c39604c54f9f944ac7791b186f3dce, type: 3}
+  - {fileID: 21300000, guid: 1554c51b5f8695e448fe80eded370d3b, type: 3}
+  scoreList: 6400000096000000c8000000fa000000

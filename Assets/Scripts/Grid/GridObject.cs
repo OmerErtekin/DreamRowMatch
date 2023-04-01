@@ -2,7 +2,7 @@ using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Grid : MonoBehaviour
+public class GridObject : MonoBehaviour
 {
     #region Variables
     [SerializeField] private Transform objectContainer;
@@ -19,6 +19,7 @@ public class Grid : MonoBehaviour
     public GridIndex CurrentGridIndex => gridIndex;
     public GridObjectTypes ObjectType => objectType;
     #endregion
+
     public void InitializeGrid(int row, int column, GridObjectTypes typeToCreate)
     {
         gridIndex.row = row;
@@ -46,7 +47,8 @@ public class Grid : MonoBehaviour
         gridCollider.enabled = false;
         transform.DOKill();
         transform.DOShakeRotation(1f, new Vector3(0, 0, 90)).SetTarget(this);
-        transform.DOScale(1, 0.25f).SetTarget(true).SetEase(Ease.OutBack).From(0);
+        transform.DOScale(1.25f, 0.25f).SetTarget(true).SetEase(Ease.OutBack).From(0).OnComplete(()=>
+        transform.DOScale(1,0.25f));
         GameUIController.Instance.UpdateCurrentScore(scoreList[(int)objectType]);
 
         objectType = GridObjectTypes.Matched;

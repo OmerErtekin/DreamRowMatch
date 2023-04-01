@@ -1,22 +1,38 @@
+using System;
+using System.Collections;
 using UnityEngine;
 
 public class GridCreator : MonoBehaviour
 {
     #region Variables
     [SerializeField] private GameObject gridPrefab, backgroundPrefab;
-    [SerializeField] private Transform backgroudParent,gridObjectsParent;
+    [SerializeField] private Transform backgroudParent, gridObjectsParent;
     [SerializeField] private float spacingBetweenGrids = 1f;
     private LevelData currentLevelData;
     private BackgroundTile[,] bgTileMatrix;
-    private Grid[,] gridMatrix;
+    private GridObject[,] gridMatrix;
     private Vector3[,] positionMatrix;
-    private int rowCount,columnCount;
+    private int rowCount, columnCount;
     #endregion
 
     #region Properties
-    public Grid[,] GridMatrix => gridMatrix;
+    public static Action<LevelData> OnGridCreated;
+    public GridObject[,] GridMatrix => gridMatrix;
     public Vector3[,] PositionMatrix => positionMatrix;
     #endregion
+    #region Components
+    private LevelReader levelReader;
+    #endregion
+
+
+    private IEnumerator Start()
+    {
+        levelReader = GetComponent<LevelReader>();
+        OnGridCreated += CreateGrid;
+        //Wait untill all subscriptions ended
+        yield return new WaitForFixedUpdate();
+        OnGridCreated.Invoke(levelReader.Levels[PlayerPrefs.GetInt("SelectedLevel", 1) - 1]);
+    }
 
     public void CreateGrid(LevelData data)
     {
@@ -29,7 +45,7 @@ public class GridCreator : MonoBehaviour
 
         Vector3 startPoint = transform.position - new Vector3((columnCount - 1) * spacingBetweenGrids / 2, (rowCount - 1) * spacingBetweenGrids / 2, 0);
         Vector3 targetPosition;
-        Grid gridScript;
+        GridObject gridScript;
         int index;
 
         for (int i = 0; i < rowCount; i++)
@@ -39,7 +55,7 @@ public class GridCreator : MonoBehaviour
                 index = j + i * columnCount;
                 targetPosition = startPoint + new Vector3(j * spacingBetweenGrids, i * spacingBetweenGrids, 0);
 
-                gridScript = Instantiate(gridPrefab, targetPosition, transform.rotation, gridObjectsParent).GetComponent<Grid>();
+                gridScript = Instantiate(gridPrefab, targetPosition, transform.rotation, gridObjectsParent).GetComponent<GridObject>();
                 bgTileMatrix[i, j] = Instantiate(backgroundPrefab, targetPosition, transform.rotation, backgroudParent).GetComponent<BackgroundTile>();
 
                 gridMatrix[i, j] = gridScript;
@@ -70,9 +86,16 @@ public class GridCreator : MonoBehaviour
         currentLevelData = data;
         rowCount = currentLevelData.gridHeight;
         columnCount = currentLevelData.gridWidth;
+        name = $"Level {currentLevelData.levelNumber} Grid";
 
-        gridMatrix = new Grid[rowCount, columnCount];
+        gridMatrix = new GridObject[rowCount, columnCount];
         positionMatrix = new Vector3[rowCount, columnCount];
         bgTileMatrix = new BackgroundTile[rowCount, columnCount];
+
+    }
+
+    private void OnDestroy()
+    {
+        OnGridCreated -= CreateGrid;
     }
 }

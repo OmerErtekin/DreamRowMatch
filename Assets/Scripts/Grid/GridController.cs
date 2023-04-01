@@ -12,7 +12,7 @@ public class GridController : MonoBehaviour
     #endregion
 
     #region Properties
-    public Grid[,] GridMatrix => gridCreator.GridMatrix;
+    public GridObject[,] GridMatrix => gridCreator.GridMatrix;
     public Vector3[,] PositionMatrix => gridCreator.PositionMatrix;
     public int RowCount => currentLevelData.gridHeight;
     public int ColumnCount => currentLevelData.gridWidth;
@@ -21,22 +21,17 @@ public class GridController : MonoBehaviour
 
     #region Components
     private GridCreator gridCreator;
-    private LevelReader levelReader;
     #endregion
 
     private void Start()
     {
         gridCreator = GetComponent<GridCreator>();
-        levelReader = GetComponent<LevelReader>();
-        InitializeLevel(levelReader.Levels[PlayerPrefs.GetInt("SelectedLevel", 1) - 1]);
+        GridCreator.OnGridCreated += InitializeController;
     }
 
-    public void InitializeLevel(LevelData levelData)
+    public void InitializeController(LevelData levelData)
     {
         currentLevelData = levelData;
-        name = $"Level {currentLevelData.levelNumber} Grid";
-        GameUIController.Instance.InitializeGameUI(currentLevelData);
-        gridCreator.CreateGrid(levelData);
     }
 
     public void CheckAvailableMatches()
@@ -111,7 +106,7 @@ public class GridController : MonoBehaviour
         return false;
     }
 
-    public Grid GetGridToSwipe(GridIndex gridPosition, Direction swipeDirection)
+    public GridObject GetGridToSwipe(GridIndex gridPosition, Direction swipeDirection)
     {
         return swipeDirection switch
         {
@@ -127,7 +122,7 @@ public class GridController : MonoBehaviour
         };
     }
 
-    public bool CanSwipeTheGrid(Grid grid, Direction swipeDirection)
+    public bool CanSwipeTheGrid(GridObject grid, Direction swipeDirection)
     {
         //Rules for swipe
         var gridIndex = grid.CurrentGridIndex;
@@ -164,5 +159,10 @@ public class GridController : MonoBehaviour
             gridCreator.GridMatrix[rowIndex, i].SetGridMatched();
         }
         CheckAvailableMatches();
+    }
+
+    private void OnDestroy()
+    {
+        GridCreator.OnGridCreated -= InitializeController;
     }
 }

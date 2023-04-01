@@ -13,7 +13,7 @@ public class SwipeInputHandler : MonoBehaviour
     #region Components
     private GameUIController gameUIController;
     private Camera mainCamera;
-    public Grid currentSelected;
+    public GridObject currentSelected;
     private GridSwiper gridSwiper;
     #endregion
     private void Start()
@@ -81,7 +81,7 @@ public class SwipeInputHandler : MonoBehaviour
             if (Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out raycastHit, 500, targetLayerMasks))
             {
                 startSwipePosition = Input.mousePosition;
-                currentSelected = raycastHit.collider.gameObject.GetComponent<Grid>();
+                currentSelected = raycastHit.collider.gameObject.GetComponent<GridObject>();
                 isMadeAMove = false;
             }
         }

@@ -21,23 +21,22 @@ public class GridSwiper : MonoBehaviour
         gameUIController = GameUIController.Instance;
     }
 
-    public bool CanSwipeTheGrid(Grid grid, Direction swipeDirection)
+    public bool CanSwipeTheGrid(GridObject grid, Direction swipeDirection)
     {
         if (isSwiping || moveCount >= gridController.MaxMoveCount) return false;
 
         return gridController.CanSwipeTheGrid(grid, swipeDirection);
     }
 
-
-    public void SwipeTheGrid(Grid grid, Direction swipeDirection)
+    public void SwipeTheGrid(GridObject grid, Direction swipeDirection)
     {
         isSwiping = true;
         StartCoroutine(SwipeRoutine(grid, swipeDirection));
     }
 
-    private IEnumerator SwipeRoutine(Grid grid, Direction swipeDirection)
+    private IEnumerator SwipeRoutine(GridObject grid, Direction swipeDirection)
     {
-        Grid grid2 = gridController.GetGridToSwipe(grid.CurrentGridIndex, swipeDirection);
+        GridObject grid2 = gridController.GetGridToSwipe(grid.CurrentGridIndex, swipeDirection);
         PerformSwipe(grid, grid2);
 
         yield return new WaitForSeconds(swipeDuration);
@@ -46,7 +45,7 @@ public class GridSwiper : MonoBehaviour
         isSwiping = false;
     }
 
-    private void PerformSwipe(Grid grid1, Grid grid2)
+    private void PerformSwipe(GridObject grid1, GridObject grid2)
     {
         var index1 = grid1.CurrentGridIndex;
         var index2 = grid2.CurrentGridIndex;
