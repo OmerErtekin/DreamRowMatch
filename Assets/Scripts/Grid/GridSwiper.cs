@@ -60,7 +60,7 @@ public class GridSwiper : MonoBehaviour
         gridController.GridMatrix[index1.row, index1.column] = grid2;
         gridController.GridMatrix[index2.row, index2.column] = grid1;
 
-        //moveCount++;
+        moveCount++;
         gameUIController.UpdateMoveText(gridController.MaxMoveCount - moveCount);
         if(moveCount >= gridController.MaxMoveCount)
         {
