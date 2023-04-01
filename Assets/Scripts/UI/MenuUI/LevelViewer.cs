@@ -71,6 +71,7 @@ public class LevelViewer : MonoBehaviour
             scrollBar.value = 0;
 
         var value = 1 - ((float)(index - 1) / (levelReader.Levels.Count - visibleBarCount + 1 - 1 / visibleBarCount));
+        value = Mathf.Clamp(value, 0, 1);
         if (tweenDuration == 0)
             scrollBar.value = value;
         else
