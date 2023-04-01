@@ -368,6 +368,37 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -40}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &182930072
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 182930073}
+  m_Layer: 0
+  m_Name: GridObjects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &182930073
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182930072}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 335835102}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &185097155
 GameObject:
   m_ObjectHideFlags: 0
@@ -650,6 +681,7 @@ GameObject:
   - component: {fileID: 335835102}
   - component: {fileID: 335835103}
   - component: {fileID: 335835104}
+  - component: {fileID: 335835105}
   m_Layer: 0
   m_Name: GridParent
   m_TagString: Untagged
@@ -670,6 +702,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 39617540}
+  - {fileID: 182930073}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -685,12 +718,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 842a1b6841df3aa4dac890f41f807a65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridPrefab: {fileID: 2944622198843954516, guid: dda3fed218e73f5449c69090de30a5d6,
-    type: 3}
-  backgroundPrefab: {fileID: 3628886027677165402, guid: 6e77207c024d8a146bf4bf1ec67de80c,
-    type: 3}
-  backgroudParent: {fileID: 39617540}
-  spacingBetweenGrids: 1
 --- !u!114 &335835104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -704,6 +731,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   urlData: {fileID: 11400000, guid: f29e937b53cc467488fe912f7662812e, type: 2}
+--- !u!114 &335835105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335835100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b9492ba5d19fd3489432e3d71a39f70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridPrefab: {fileID: 2944622198843954516, guid: dda3fed218e73f5449c69090de30a5d6,
+    type: 3}
+  backgroundPrefab: {fileID: 3628886027677165402, guid: 6e77207c024d8a146bf4bf1ec67de80c,
+    type: 3}
+  backgroudParent: {fileID: 39617540}
+  gridObjectsParent: {fileID: 182930073}
+  spacingBetweenGrids: 1
 --- !u!1 &542906717
 GameObject:
   m_ObjectHideFlags: 0

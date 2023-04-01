@@ -4,7 +4,8 @@ using System.Collections.Generic;
 [Serializable]
 public struct GridIndex
 {
-    public int row; public int column;
+    public int row;
+    public int column;
 }
 
 [Serializable] 

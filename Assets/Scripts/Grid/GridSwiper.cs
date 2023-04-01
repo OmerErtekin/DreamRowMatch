@@ -41,8 +41,8 @@ public class GridSwiper : MonoBehaviour
         PerformSwipe(grid, grid2);
 
         yield return new WaitForSeconds(swipeDuration);
-        gridController.CheckIsRowMatch(grid.CurrentGridIndex.row);
-        gridController.CheckIsRowMatch(grid2.CurrentGridIndex.row);
+        gridController.TryMatchTheRow(grid.CurrentGridIndex.row);
+        gridController.TryMatchTheRow(grid2.CurrentGridIndex.row);
         isSwiping = false;
     }
 

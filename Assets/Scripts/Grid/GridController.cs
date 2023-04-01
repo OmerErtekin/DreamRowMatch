@@ -42,16 +42,19 @@ public class GridController : MonoBehaviour
     public void CheckAvailableMatches()
     {
         if (matchedRows.Count == 0) return;
-
-        isThereAvailableMatch = MatchBetweenBot_FirstMatchedRow() || MatchBetweenTop_LastMatchedRow()
+        //I made a simple match control without checking is there enough move to make this match happen.
+        //I think i could also do that by creating decision trees with N = remained Move Count but i don't think that that's what you wanted so i made it simple.
+        isThereAvailableMatch = MatchBetweenBot_BotMatchedRow() || MatchBetweenTop_TopMatchedRow()
             || MatchBetweenMatchedRows();
 
         if (!isThereAvailableMatch)
             GameUIController.Instance.FinishTheGame(GameEndType.NoMoreMatch);
     }
 
-    private bool MatchBetweenTop_LastMatchedRow()
+    private bool MatchBetweenTop_TopMatchedRow()
     {
+        //Check is there enough elements to make match between top edge and 
+        //the top matched row
         if (matchedRows.Max() == RowCount - 1) return false;
 
         elementsBetweenRows = new int[(int)GridObjectTypes.Matched];
@@ -67,8 +70,10 @@ public class GridController : MonoBehaviour
         return elementsBetweenRows.Max() >= ColumnCount;
     }
 
-    private bool MatchBetweenBot_FirstMatchedRow()
+    private bool MatchBetweenBot_BotMatchedRow()
     {
+        //Check is there enough elements to make match between bot edge and
+        //the bot matched row
         if (matchedRows.Min() == 0) return false;
 
         elementsBetweenRows = new int[(int)GridObjectTypes.Matched];
@@ -86,6 +91,7 @@ public class GridController : MonoBehaviour
 
     private bool MatchBetweenMatchedRows()
     {
+        //Check is there enough elements to make match between matched rows
         if (matchedRows.Count <= 1) return false;
 
         for (int i = 0; i < matchedRows.Count - 1; i++)
@@ -139,29 +145,24 @@ public class GridController : MonoBehaviour
         };
     }
 
-    public void CheckIsRowMatch(int rowIndex)
+    public void TryMatchTheRow(int rowIndex)
     {
         if (ColumnCount <= 1) return;
 
         GridObjectTypes searchedType = gridCreator.GridMatrix[rowIndex, 0].ObjectType;
-        bool isThereRowMatch = true;
         for (int i = 1; i < ColumnCount; i++)
         {
             if (gridCreator.GridMatrix[rowIndex, i].ObjectType != searchedType)
             {
-                isThereRowMatch = false;
-                break;
+                return;
             }
         }
-        if (isThereRowMatch)
+        matchedRows.Add(rowIndex);
+        matchedRows.Sort();
+        for (int i = 0; i < ColumnCount; i++)
         {
-            matchedRows.Add(rowIndex);
-            matchedRows.Sort();
-            for (int i = 0; i < ColumnCount; i++)
-            {
-                gridCreator.GridMatrix[rowIndex, i].SetGridMatched();
-            }
-            CheckAvailableMatches();
+            gridCreator.GridMatrix[rowIndex, i].SetGridMatched();
         }
+        CheckAvailableMatches();
     }
 }

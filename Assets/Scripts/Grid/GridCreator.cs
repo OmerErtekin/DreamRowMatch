@@ -21,7 +21,6 @@ public class GridCreator : MonoBehaviour
     public void CreateGrid(LevelData data)
     {
         SetVariables(data);
-
         if (data.gridFormation.Count != rowCount * columnCount)
         {
             Debug.LogWarning("Wrong Formation!");
